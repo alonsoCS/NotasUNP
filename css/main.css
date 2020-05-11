@@ -1,0 +1,43 @@
+main{
+	margin-top: 50px;
+	padding-right: 5%;
+	padding-left: 5%;
+}
+
+
+section{
+	background-color: #F6F9C6;
+}
+section div{
+	padding-left: 5%;
+	padding-right: 5%;
+}
+
+
+.Padmin{
+	height: 400px;
+	width: 100%;
+}
+.imgAdmin{
+	width: 50%; 
+	height: 50%;
+}
+.Plogin{
+	padding-top:5%;
+	padding-left:20%;
+	padding-right:20%;
+	padding-bottom: 10%;
+}
+/* responsive*/
+@media (min-width: 760px) {
+	main{
+		margin-top: 100px;
+	}
+	.Plogin{
+		padding-left:35%;
+	    padding-right:35%;
+	}
+	.imgAdmin{
+		width: 30%; 
+    }
+}
