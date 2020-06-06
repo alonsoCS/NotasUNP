@@ -8,22 +8,21 @@
 					<th>Nombre</th>
 					<th>Ciudad</th>
 					<th>Rector</th>
-					<th>Estado</th>
 					<th>Operaciones</th>
 				</tr>
 			</thead>
 			<tbody>
-
-				<?php foreach ($datos as $uni) { ?>
-
+				<?php 
+				foreach ($datos as $universidad) { 
+				?>
 					<tr>
-						<td><?php echo $uni->CodUniversidad; ?></td>
-						<td><?php echo $uni->Nombre; ?></td>
-						<td><?php echo $uni->Ciudad; ?></td>
-						<td><?php echo $uni->Rector; ?></td>
-						<td><?php echo $uni->Estado; ?></td>
-						<td><button  class="btn btn-danger  icon-trash " name="<?php echo $uni->CodUniversidad; ?>" ></button>
-						<button  class="btn btn-warning icon-pencil" name="as" ></button>
+						<td><?php echo $universidad['CodUniversidad'];?></td>
+						<td><?php echo $universidad['Nombre']; ?></td>
+						<td><?php echo $universidad['Ciudad']; ?></td>
+						<td><?php echo $universidad['Rector']; ?></td>
+						<td><a class="btn btn-warning icon-pencil" href="<?php echo URL."Universidad/Modificar&id=".$universidad['CodUniversidad']; ?>">
+							</a>
+							<a class="btn btn-danger icon-trash" href="<?php echo URL."Universidad/Eliminar&id=".$universidad['CodUniversidad']; ?>"></a>
 						</td>
 					</tr>
 				<?php } ?>

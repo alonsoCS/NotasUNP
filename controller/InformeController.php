@@ -1,125 +1,159 @@
 <?php
-class InformeController extends ControladorBase{
-    
-    
-    public function __construct() {
-        parent::__construct();
+
+class InformeController extends MainController{
+    public function __construct()
+    {
+       
+        MainController::__construct();
     }
     
     public function Index(){
         $usuario=$_SESSION['user'];
         $_POST['user']=$usuario;
-        $curso=new CursoModelo();
-        $datos=$curso->ConsultarCursosUsuario($usuario->CodEscuela,$usuario->CodEstudiante);
-
-        $_POST['creditos']=$this->Creditos($usuario);
-        $_POST['informacion']=$this->InforHead($usuario);
+        $datos=$this->ConsultarCursosUsuario($usuario['CodEscuela'],$usuario['CodEstudiante']);
+        $creditos=$this->Creditos($usuario['CodEscuela'],$usuario['CodEstudiante']);
+        $_POST['creditos']=$creditos['creditos'];
+        $_POST['informe']=$creditos['informe'];
+        $_POST['informacion']=$this->Informacion($usuario['CodEscuela'],$usuario['CodEstudiante']);
         
         $this->view("Informe","Index",$datos);
     }
-    public function Creditos($usuario){
+    protected function Creditos($codEscuela,$codEstudiante){
+        //arreglo
         $creditos=array();
+        
+        $escuelas=new EscuelaModelo();
+        $dataEscuela=$escuelas->ConsultarEscuela($codEscuela);
+        $escuela=$dataEscuela->fetch();
+
         //creditos de carrera[e,o]****
-        
-        $Escu=new EscuelaModelo();
+        $creEscuelaObli=$escuela['CresObli'];
+        $creEscuelaElec=$escuela['CresElec'];
 
-        $escuela=$Escu->ConsultarEscuelas($usuario->CodEscuela);
+        //creditos aprobados[obli, elec]
+        $creditoAproObli=0;
+        $creditoAproElec=0;
 
-        $creCarOB=$escuela[0]->CresObli;
-        $creCarEl=$escuela[0]->CresElec;
+        $creditoDes=0;
+
+        $Tcursos=0;
+        //cursos aprobados 
+        $cursoAproObli=0;
+        $cursoAproElec=0;
+
+        //sumaNotas
+        $SumaNotas=0;
         
-        //aprobados[o,e]
-        $cur=new CursoModelo();
-        $cursos=$cur->ConsultarCursosHistorial($usuario->CodEscuela,$usuario->CodEstudiante);
-        $credObEst=0;
-        $credElEst=0;
-        foreach ($cursos as $value) {
-            # code...
-            if($value->Tipo=="O")
+        $cursos=new CursoModelo();
+        $datos=[
+            "codEscuela"=>$codEscuela,
+            "codEstudiante"=>$codEstudiante
+        ];
+        $dataCursos=$cursos->ConsultarCursosEstudiante($datos);
+        foreach ($dataCursos as $curso) {
+            $Tcursos++;
+            $SumaNotas+=($curso['nota']*$curso['creditos']);
+                # code...
+            if($curso['tipo']=="O")
             {
-                if($value->Nota>10){
-                    $credObEst+=$value->Creditos;
+                if($curso['nota']>10){
+                    $creditoAproObli+=$curso['creditos'];
+                    $cursoAproObli++;
+                }else{
+                    $creditoDes+=$curso['creditos'];
                 }
             }else
             {
-                if($value->Nota>10){
-                $credElEst+=$value->Creditos;
+                if($curso['nota']>10){
+                    $creditoAproElec+=$curso['creditos'];
+                    $cursoAproElec++;
+                }else{
+                    $creditoDes+=$curso['creditos'];
                 }
             }
         }
         //debe[o,e]
-        $creDebeO=$creCarOB-$credObEst;
-        $creDebeE=$creCarEl-$credElEst;
+        $creditosDebeObli=$creEscuelaObli-$creditoAproObli;
+        $creditosDebeElec=$creEscuelaElec-$creditoAproElec;
 
-        $creditos[]=$creCarOB;
-        $creditos[]=$creCarEl;
-         $creditos[]=$credObEst;
-        $creditos[]=$credElEst;
-         $creditos[]=$creDebeO;
-        $creditos[]=$creDebeE;
+        $creditos=[
+            "CEscuelaObli"=>$creEscuelaObli,
+            "CEscuelaElec"=>$creEscuelaElec,
+            "CEstudianteObli"=>$creditoAproObli,
+            "CEstudianteElec"=>$creditoAproElec,
+            "CEstDebeOblig"=>$creditosDebeObli,
+            "CEstDebeElec"=>$creditosDebeElec,
+        ];
 
-        $creditos[]=$creCarOB+$creCarEl;
-        $creditos[]=$credObEst+$credElEst;
-        $creditos[]=$creDebeE+$creDebeO;
-        return $creditos;
-    }
-    private function InforHead($usuario)
-    {
-        //universidad, escuela, facultad
-        $Escu=new EscuelaModelo();
-
-        $escuela=$Escu->ConsultarEscuelas($usuario->CodEscuela)[0];
-
-        $fac=new FacultadModelo();
-        $facultad=$fac->ConsultarFacultades($escuela->CodFacultad)[0];
-        $uni=new UniversidadModelo();
-        $universidad=$uni->ConsultarUniversidades($facultad->CodUniversidad)[0];
-
-        $primero=[$escuela->Nombre,$facultad->Nombre,$universidad->Nombre];
-
-        /*----- creditos y cursos-------*/
-        $cur=new CursoModelo();
-        $cursos=$cur->ConsultarCursosHistorial($usuario->CodEscuela,$usuario->CodEstudiante);
-        
-        $Tcursos=count($cursos);
-        $SumaNotas=0;
-         //creditos aprobados[obli, elec]
-        $creApro=0;
-        $creDes=0;
-        //cursos aprobados 
-        $curAprO=0;
-        $curAprE=0;
-       
-        foreach ($cursos as $value) {
-            # code...
-            
-            if($value->Nota>10)
-            {
-                $creApro+=$value->Creditos;
-                if($value->Tipo=="O")
-                {
-                    $curAprO++;
-                }else
-                {
-                    $curAprE++;
-                }
-            }else{
-               $creDes+=$value->Creditos; 
-            }
-           
-            $SumaNotas+=($value->Nota*$value->Creditos);
-        }
         //Ponderado
         if($Tcursos==0){
             $ponderado=0;
         }else{
-            $ponderado=$SumaNotas/($creApro+$creDes);
+            $ponderado=$SumaNotas/($creditoAproObli+$creditoAproElec+$creditoDes);
             $ponderado=round($ponderado * 100) / 100;
         }
+        $informe=[
+            "totalCursos"=>$Tcursos,
+            "cursoAproOblig"=>$cursoAproObli,
+            "cursoAproElec"=>$cursoAproElec,
+            "ponderado"=>$ponderado,
+            "creditosApro"=>$creditoAproObli+$creditoAproElec
+        ];
 
-        $segundo=[$ponderado,$Tcursos,$creApro,$curAprO,$curAprE];
-        return [$primero,$segundo];
+        $informeGeneral=[
+
+            "creditos"=>$creditos,
+            "informe"=>$informe
+        ];
+        return $informeGeneral;
     }
+    protected function Informacion($codEscuela,$codEstudiante)
+    {
+        //universidad, escuela, facultad
+        $escuelas=new EscuelaModelo();
+        $dataEscuela=$escuelas->ConsultarEscuela($codEscuela);
+        $escuela=$dataEscuela->fetch();
+
+        $facultades=new FacultadModelo();
+        $dataFacultad=$facultades->consultarFacultad($escuela['CodFacultad']);
+        $facultad=$dataFacultad->fetch();
+
+        $universidades=new UniversidadModelo();
+        $dataUniversidad=$universidades->consultarUniversidad($facultad['CodUniversidad']);
+        $universidad=$dataUniversidad->fetch();
+
+        $informacion=[
+            "Universidad"=>$universidad['Nombre'],
+            "Facultad"=>$facultad['Nombre'],
+            "Escuela"=>$escuela['Nombre']
+        ];
+
+        return $informacion;
+
+    }
+    protected function ConsultarCursosUsuario($codEscuela,$codEstudiante)
+    {
+        $rowCurso=array();
+        $cursos=new CursoModelo();
+        $dataCursos=$cursos->ConsultarCursosCicloGeneral($codEscuela);
+        foreach ($dataCursos as $rowCurso) {
+            $notas= new NotaCursoModelo();
+            $datos=[
+                "codCurso"=>$rowCurso["CodCurso"],
+                "codEstudiante"=>$codEstudiante
+            ];
+            $dataNota=$notas->ConsultarNotaCurso($datos);
+            if($dataNota->rowCount()>0)
+            {
+                $nota=$dataNota->fetch();
+                $rowCurso["Nota"]=$nota['Nota'];
+            }
+                
+            $resultSet[]=$rowCurso;
+        }
+        return $resultSet;
+
+    } 
 }
     
 

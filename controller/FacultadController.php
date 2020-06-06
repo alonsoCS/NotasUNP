@@ -1,77 +1,86 @@
 <?php
-class FacultadController extends ControladorBase{
-    
-	
-    public function __construct() {
-        parent::__construct();
-    }
-    
-    public function Index(){
-        $uni= new FacultadModelo();
-       	$datos=$uni->ConsultarFacultades();
-        $arr=$this->CargarUniversidades();
-        $_POST['unis']=$arr;
-        
-        $this->view("Facultad","Index",$datos);
-    }
-    public function Create(){
-
-        $universidad=$_POST['universidades'];
-
-        $uni= new UniversidadModelo();
-        $datos=$uni->ConsultarUniversidades();
-        
-        foreach ($datos as $obj) 
+    class FacultadController extends MainController{
+ 
+        protected $facultad;
+        public function __construct()
         {
-            if($obj->Nombre==$universidad)
-            {
-                $universidad=$obj->CodUniversidad;
-                break;
-            }
-        } 
-
-
-        $fac= new FacultadModelo();
-        $fac->setNombre($_POST['nombre']);
-        $fac->setCodUniversidad($universidad);
-        $nombre=$fac->getNombre();
-        if($nombre!="") 
-        {
-            $resultado=$fac->save();
-            if($resultado==1)//se guardó correctamente
-            {
-                $mensaje="Guadado con éxito";
-            }elseif ($resultado=="10") {
-                # code...
-                $mensaje="Facultad ya ha sido agregada";
-            }
-            else
-            {
-                $mensaje="Hubo un error" ;
-            }
-        }else{
-            $mensaje="introduzca un nombre";
+            MainController::__construct();
+            $this->facultad = new FacultadModelo();
         }
-        $_POST['mensaje']=$mensaje;
-         $this->Index();
 
-    }
+        public function Index(){ 
+            $data=$this->facultad->ConsultarFacultades();
+            $this->view("Facultad","Index",$data);
+        }
+        public function Nuevo(){
+            $_POST['universidades']=UniversidadModelo::ConsultarUniversidades();
+             $this->view("Facultad","Nuevo");
+        }
 
-    public function CargarUniversidades()
-    {
-        $uni= new UniversidadModelo();
-        $datos=$uni->ConsultarUniversidades();
-        $arr=array();
-        foreach ($datos as $obj) 
-        {
-            if($obj->Estado=='1')
+        public function Guardar(){
+            $universidad=mainModel::limpiar_cadena($_POST['universidades']);
+            $nombre=mainModel::limpiar_cadena($_POST['nombre']);
+            $datos=[
+                "codigo"=>$universidad,
+                "nombre"=>$nombre
+            ];
+            $resultado=$this->facultad->guardarFacultad($datos);
+
+            if($resultado == "0")
             {
-                $arr[$obj->CodUniversidad]=$obj->Nombre;
+                $mensaje="Facultad ya ha sido agregada";
+            }elseif ($resultado->rowCount()==0) {
+                $mensaje="Error al guardar";
+            }else{
+                $mensaje="Guadado con éxito";  
             }
-        } 
-        return $arr;
+            $_POST['mensaje']=$mensaje;
+            $this->Index();
+        }
 
+        public function Modificar($id)
+        {
+
+            $id=mainModel::limpiar_cadena($id);
+            $data=$this->facultad->consultarFacultad($id);
+            $data=$data->fetch();
+            $_POST['universidades']=UniversidadModelo::ConsultarUniversidades();
+            $this->view("Facultad","Modificar",$data);
+        }
+        public function Actualizar()
+        {
+            $codigo=mainModel::limpiar_cadena($_POST['codigo']);
+            $universidad=mainModel::limpiar_cadena($_POST['universidades']);
+            $nombre=mainModel::limpiar_cadena($_POST['nombre']);
+            $datos=[
+                "codFacultad"=>$codigo,
+                "codigo"=>$universidad,
+                "nombre"=>$nombre
+            ];
+            $guardar=$this->facultad->actualizarFacultad($datos);
+            if($guardar=="0")
+            {
+                $_POST['mensaje']="La facultad ya existe";
+            }elseif($guardar->rowCount()>0){
+                $_POST['mensaje']="Se actualizó correctamente";
+            }else{
+                $_POST['mensaje']="Hubo un error en actualizar";
+            }
+            $this->Index();
+        }
+
+        public function Eliminar($id)
+        {
+            $id=mainModel::limpiar_cadena($id);
+
+            $data=$this->facultad->eliminarFacultad($id);
+            if($data->rowCount()>0){
+                $_POST['mensaje']="Se eliminó correctamente";
+            }else{
+                $_POST['mensaje']="Hubo un error en Eliminar";
+            }
+            $this->Index();
+        }
     }
-}
     
 ?>

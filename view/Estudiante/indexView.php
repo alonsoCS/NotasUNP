@@ -1,12 +1,14 @@
 
-<div align="center">
+<div >
 	<h2>ESTUDIANTE</h2>
-	<div align="left">
-		<?php 
-		include "CreateView.php"; ?>
-		<?php if(isset($_POST['mensaje'])){ echo $_POST['mensaje'];} ?>
+	<br>
+	<div id="alerta">
+		<?php if (isset($_POST['mensaje'])) {
+			echo "<p>".$_POST['mensaje']."</p>";
+		} ?>
 	</div>
-	<br><br>
+	<a href="<?php echo URL;?>Estudiante/Nuevo" class="btn btn-primary">Nuevo Estudiante</a>
+	<br>
 	<div>
 		<?php
 		include "TablaView.php"; 

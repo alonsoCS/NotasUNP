@@ -1,18 +1,16 @@
 
-<div align="center">
-	
-	
+<div >
 	<h2>UNIVERSIDADES</h2>
-	<div align="left">
-		<?php 
-		include "CreateView.php"; ?>
-		<?php if(isset($_POST['mensaje'])){echo $_POST['mensaje'];} ?>
+
+	<div id="alerta">
+		<?php if (isset($_POST['mensaje'])) {
+			echo "<p>".$_POST['mensaje']."</p>";
+		} ?>
 	</div>
-	<br><br>
-	<div>
+	<a href="<?php echo URL;?>Universidad/Nuevo" class="btn btn-primary">Nueva Universidad</a>
+	<div id="contenido" >
 		<?php
 		include "TablaView.php"; 
 		?>
-
 	</div>
 </div>

@@ -1,48 +1,89 @@
 <?php
-class UniversidadController extends ControladorBase{
     
-    
-    public function __construct() {
-        parent::__construct();
-    }
-    
-    public function Index(){
-        $uni= new UniversidadModelo();
-        $datos=$uni->ConsultarUniversidades();
- 
-        
-        $this->view("Universidad","Index",$datos);
-    }
-    public function Create(){
+    class UniversidadController extends MainController{
 
-        $nombre=$_POST['nombre'];
-        $ciudad=$_POST['ciudad'];
-        $rector=$_POST['rector'];
-        
-       $uni= new UniversidadModelo();
-        $uni->setNombre($nombre);
-        $uni->setCiudad($ciudad);
-        $uni->setRector($rector);
-        if($nombre!=""||$ciudad!=""||$rector!="") 
+        protected $universidad;
+        public function __construct()
         {
-            $resultado=$uni->save();
-            if($resultado==1)//se guardó correctamente
-            {
-                $mensaje="Guadado con éxito";
-            }elseif ($resultado=="10") {
-                # code...
-                $mensaje="Universidad ya ha sido agregada";
-            }
-            else
-            {
-                $mensaje="Hubo un error" ;
-            }
-        }else{
-            $mensaje="introduzca un todos los datos correctos";
+            MainController::__construct();
+            $this->universidad = new UniversidadModelo();
         }
-        $_POST['mensaje']=$mensaje;
-         $this->Index();
-    }
+        public function Index()
+        {
+            $data=$this->universidad->ConsultarUniversidades();
+            $this->view("Universidad","Index",$data);
+        }
 
-}
+        public function Nuevo(){
+             $this->view("Universidad","Nuevo");
+        }
+        public function Guardar(){
+
+            $nombre=mainModel::limpiar_cadena($_POST['nombre']);
+            $ciudad=mainModel::limpiar_cadena($_POST['ciudad']);
+            $rector=mainModel::limpiar_cadena($_POST['rector']);
+           
+                $datos=[
+                    "nombre"=>$nombre,
+                    "ciudad"=>$ciudad,
+                    "rector"=>$rector
+                ];
+                $guardar=$this->universidad->crearUniversidad($datos);
+                
+                if($guardar=='0'){
+                    $_POST['mensaje']="Universidad ya existe";
+                }elseif ($guardar->rowCount()==0) {
+                    $_POST['mensaje']="Hubo un error en guardar";
+                }else{
+                    $_POST['mensaje']="Guardado con exito";
+                }
+            $this->Index();
+        }
+
+        public function Modificar($id)
+        {
+            $id=mainModel::limpiar_cadena($id);
+            $data=$this->universidad->consultarUniversidad($id);
+            $data=$data->fetch();
+            $this->view("Universidad","Modificar",$data);
+        }
+        public function Actualizar()
+        {
+            $codigo=mainModel::limpiar_cadena($_POST['codigo']);
+            $nombre=mainModel::limpiar_cadena($_POST['nombre']);
+            $ciudad=mainModel::limpiar_cadena($_POST['ciudad']);
+            $rector=mainModel::limpiar_cadena($_POST['rector']);
+           
+            $datos=[
+                "codigo"=>$codigo,
+                "nombre"=>$nombre,
+                "ciudad"=>$ciudad,
+                "rector"=>$rector
+            ];
+            $guardar=$this->universidad->actualizarUniversidad($datos);
+            if($guardar==0)
+            {
+                $_POST['mensaje']="La universidad ya existe";
+            }elseif($guardar->rowCount()>0){
+                $_POST['mensaje']="Se actualizó correctamente";
+            }else{
+                $_POST['mensaje']="Hubo un error en actualizar";
+            }
+            $this->Index();
+        }
+
+        public function Eliminar($id)
+        {
+            $id=mainModel::limpiar_cadena($id);
+
+            $data=$this->universidad->eliminarUniversidad($id);
+            if($data->rowCount()>0){
+                $_POST['mensaje']="Se eliminó correctamente";
+            }else{
+                $_POST['mensaje']="Hubo un error en Eliminar";
+            }
+            $this->Index();
+        }
+        
+    }
 ?>

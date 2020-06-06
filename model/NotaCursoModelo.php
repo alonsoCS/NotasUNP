@@ -1,76 +1,32 @@
 <?php
 
-class NotaCursoModelo
+class NotaCursoModelo extends mainModel
 {
-	
-	private $CodCurso;
-	private  $CodEstudiante;
-	private $Nota;
-	private $Estado;
-
-	
-	public function setCodCurso($code)
-	{
-		$this->CodCurso=$code;
-	}
-	public function getCodCurso() {
-        return $this->CodCurso;
-    }
-
-    public function setCodEstudiante($code)
-	{
-		$this->CodEstudiante=$code;
-	}
-	public function getCodEstudiante() {
-        return $this->CodEstudiante;
-    }
-
-    public function setNota($nota)
-	{
-		$this->Nota=$nota;
-	}
-	public function getNota() {
-        return $this->Nota;
-    }
-
-    public function setEstado($estado)
-	{
-		$this->Estado=$estado;
-	}
-	public function getEstado() {
-        return $this->Estado;
-    }
 	
 	public function ConsultarNotas()
 	{
-		$sql = "SELECT * FROM notacurso ";
-		$conn=Coneccion::getConeccion();
-		$query=$conn->query($sql);
-		$resultSet=array();
-        while ($row = $query->fetch_object()) {
-           $resultSet[]=$row;
-        }
-        Coneccion::finalizar();
-		return $resultSet;
+		$sql=mainModel::ejecutar_consulta_simple("SELECT * FROM notacurso ");
+		return $sql;
+	}
+	public function ConsultarNotaCurso($datos)
+	{
+		$sql=mainModel::conectar()->prepare("SELECT Nota FROM notacurso WHERE CodCurso=:codCurso AND CodEstudiante=:codEstudiante LIMIT 1");
+		$sql->bindParam(':codCurso',$datos['codCurso']);
+		$sql->bindParam(':codEstudiante',$datos['codEstudiante']);
+		$sql->execute();
+		return $sql;
 	} 
 		
-	public function save() {
- 		$sql = "INSERT INTO notacurso (CodCurso, CodEstudiante,Nota, Estado) VALUES ('".$this->getCodCurso()."','".$this->getCodEstudiante()."','".$this->getNota()."' ,'1' )";
- 		$con=Coneccion::getConeccion();
-		$query=$con->query($sql);
-		Coneccion::finalizar();
- 		return $query;
+	public function guardar($datos) {
+		if($this->ConsultarNotaCurso($datos)->rowCount()==0){
+ 			$sql=mainModel::conectar()->prepare("INSERT INTO notacurso (CodCurso, CodEstudiante,Nota) VALUES (:codCurso, :codEstudiante, :nota )");
+			$sql->bindParam(':codCurso',$datos['codCurso']);
+			$sql->bindParam(':codEstudiante',$datos['codEstudiante']);
+			$sql->execute();
+			return $sql;
+		}else{
+			return null;
+		}
  	}
- 	private function Existe()
- 	{
- 		$sql = "SELECT * FROM estudiante WHERE CodEstudiante='".$this->getCodigo()."' ";
-		$conn=Coneccion::getConeccion();
-		$query=$conn->query($sql);
-		$result=false;
-		while ($row = $query->fetch_object()) {
-           $result=true;
-        }
-        Coneccion::finalizar();
-		return $result;
- 	}
+ 	
 }

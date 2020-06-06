@@ -1,77 +1,111 @@
 <?php
-class EscuelaController extends ControladorBase{
-    
-	
-    public function __construct() {
-        parent::__construct();
+   
+class EscuelaController extends MainController{
+ 
+    protected $escuela;
+    public function __construct()
+    {
+        MainController::__construct();
+        $this->escuela = new EscuelaModelo();
+    }
+
+    public function Index(){ 
+        $data=$this->escuela->ConsultarEscuelas();
+        $this->view("Escuela","Index",$data);
+    }
+
+    public function Nuevo(){
+        $_POST['universidades']=UniversidadModelo::ConsultarUniversidades();
+        $this->view("Escuela","Nuevo");
     }
     
-    public function Index(){
-        $esc= new EscuelaModelo();
-       	$datos=$esc->ConsultarEscuelas();
-        $facus=$this->CargarFacultades();
-        $unis=$this->CargarUniversidades();
-        $_POST['facus']=$facus;
-        $_POST['unis']=$unis;
+    public function Guardar(){
+        $facultad=mainModel::limpiar_cadena($_POST['facultades']);
+        $nombre=mainModel::limpiar_cadena($_POST['nombre']);
+        $codigo=mainModel::limpiar_cadena($_POST['codigo']);
+        $creO=mainModel::limpiar_cadena($_POST['creO']);
+        $creE=mainModel::limpiar_cadena($_POST['creE']);
+        $ciclos=mainModel::limpiar_cadena($_POST['ciclos']);
+        $datos=[
+            "codFacultad"=>$facultad,
+            "nombre"=>$nombre,
+            "codigo"=>$codigo,
+            "creObli"=>$creO,
+            "creElec"=>$creE,
+            "ciclos"=>$ciclos
+        ];
+        $resultado=$this->escuela->guardarEscuela($datos);
         
-        $this->view("Escuela","Index",$datos);
-    }
-    public function Create(){
-
-        $fac=$_POST['facultades'];
-
-
-        $escuela= new EscuelaModelo();
-        $escuela->setNombre($_POST['nombre']);
-        $escuela->setCodigo($_POST['codigo']);
-        $escuela->setCreO($_POST['creO']);
-        $escuela->setCreE($_POST['creE']);
-        $escuela->setCodFacultad($fac); 
-        $nombre=$escuela->getNombre();
-        if($nombre!="" || $fac!='' || $fac!='0') 
+        if($resultado == "0")
         {
-            $resultado=$escuela->save();
-            if($resultado==1)//se guardó correctamente
-            {
-                $mensaje="Guadado con éxito";
-            }elseif ($resultado="10") {
-                # code...
-                $mensaje="Escuela ya existe";
-            }
-            else
-            {
-                $mensaje="Hubo un error" ;
-            }
+            $mensaje="Escuela ya ha sido agregada";
+        }elseif ($resultado->rowCount()==0) {
+            $mensaje="Error al guardar";
         }else{
-            $mensaje="introduzca un nombre o seleccione una facultad";
+            $mensaje="Guadado con éxito";  
         }
         $_POST['mensaje']=$mensaje;
-         $this->Index();
-
+        $this->Index();
     }
 
-    private function CargarUniversidades()
+    public function Modificar($id)
     {
-        $uni= new UniversidadModelo();
-        $datos=$uni->ConsultarUniversidades();
-        $arr=array();
-        foreach ($datos as $obj) 
+        $id=mainModel::limpiar_cadena($id);
+        $data=$this->escuela->consultarEscuela($id);
+        $data=$data->fetch();
+
+        $facultad=FacultadModelo::consultarFacultad($data['CodFacultad']);
+        $facultad=$facultad->fetch();
+        $_POST['facultades']=FacultadModelo::ConsultarFacultadesAjax($facultad['CodUniversidad']);
+        $_POST['universidades']=UniversidadModelo::ConsultarUniversidades();
+        $_POST['universidad']=$facultad['CodUniversidad'];
+        $_POST['facultad']=$facultad['CodFacultad'];
+        $this->view("Escuela","Modificar",$data);
+    }
+    public function Actualizar()
+    {
+        $codEscuela=mainModel::limpiar_cadena($_POST['codEscuela']);
+        $facultad=mainModel::limpiar_cadena($_POST['facultades']);
+        $nombre=mainModel::limpiar_cadena($_POST['nombre']);
+        $codigo=mainModel::limpiar_cadena($_POST['codigo']);
+        $creO=mainModel::limpiar_cadena($_POST['creO']);
+        $creE=mainModel::limpiar_cadena($_POST['creE']);
+        $ciclos=mainModel::limpiar_cadena($_POST['ciclos']);
+        $datos=[
+            "codEscuela"=>$codEscuela,
+            "codFacultad"=>$facultad,
+            "nombre"=>$nombre,
+            "codigo"=>$codigo,
+            "creObli"=>$creO,
+            "creElec"=>$creE,
+            "ciclos"=>$ciclos
+        ];
+        $resultado=$this->escuela->actualizarEscuela($datos);
+        
+        if($resultado == "0")
         {
-            if($obj->Estado=='1')
-            {
-                $arr[$obj->CodUniversidad]=$obj->Nombre;
-            }
-        } 
-        return $arr;
-
+            $mensaje="Escuela ya ha sido agregada";
+        }elseif ($resultado->rowCount()==0) {
+            $mensaje="Error al guardar";
+        }else{
+            $mensaje="Guadado con éxito";  
+        }
+        $_POST['mensaje']=$mensaje;
+        $this->Index();
     }
-    private function CargarFacultades()
+
+    public function Eliminar($id)
     {
-        $fac= new FacultadModelo();
-        $datosF=$fac->ConsultarFacultades();
+            $id=mainModel::limpiar_cadena($id);
 
-        return $datosF;
-    }
+            $data=$this->escuela->eliminarEscuela($id);
+            if($data->rowCount()>0){
+                $_POST['mensaje']="Se eliminó correctamente";
+            }else{
+                $_POST['mensaje']="Hubo un error en Eliminar";
+            }
+            $this->Index();
+        }
+
+
 } 
-    
-?>

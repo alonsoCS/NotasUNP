@@ -19,22 +19,22 @@ $creditos=$_POST['creditos']; ?>
         		<tbody>
             		<tr align="center">
                 		<td class="bg-primary"><strong>Número de Créditos Obligatorios</strong></td>
-                		<td><?php echo $creditos[0]; ?></td>
-                		<td><?php echo $creditos[2]; ?></td>
-                		<td><?php echo $creditos[4]; ?></td>
+                		<td><?php echo $creditos["CEscuelaObli"]; ?></td>
+                		<td><?php echo $creditos["CEstudianteObli"]; ?></td>
+                		<td><?php echo  $creditos["CEstDebeOblig"]; ?></td>
             		</tr>
                     <tr align="center">
                         <td class="bg-primary"><strong>Número de Créditos Electivos</strong>
                         </td>
-                        <td><?php echo $creditos[1]; ?></td>
-                        <td><?php echo $creditos[3]; ?></td>
-                        <td><?php echo $creditos[5]; ?></td>
+                        <td><?php echo $creditos["CEscuelaElec"]; ?></td>
+                        <td><?php echo $creditos["CEstudianteElec"]; ?></td>
+                        <td><?php echo $creditos["CEstDebeElec"]; ?></td>
                     </tr>
                     <tr align="center">
                         <td class="bg-primary"><strong>Número Total de Créditos</strong></td>
-                        <td><?php echo $creditos[6]; ?></td>
-                        <td><?php echo $creditos[7]; ?></td>
-                        <td><?php echo $creditos[8]; ?></td>
+                        <td><?php echo  $creditos["CEscuelaObli"]+$creditos["CEscuelaElec"]; ?></td>
+                        <td><?php echo $creditos["CEstudianteObli"]+$creditos["CEstudianteElec"]; ?></td>
+                        <td><?php echo $creditos["CEstDebeOblig"]+$creditos["CEstDebeElec"]; ?></td>
                     </tr>
                 </tbody>
         </table>

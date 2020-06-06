@@ -7,25 +7,29 @@
 				<td>Codigo</td>
 				<td>CodUniversidad</td>
 				<td>Nombre</td>
-				<td>Estado</td>
 				<td></td>
 			</tr>
 		</thead>
 		<tbody>
-
-		<?php foreach ($datos as $fac) { ?>
-
+		<?php 
+		if(isset($datos))
+		{
+			foreach ($datos as $facultad) 
+			{ 
+		?>
 		<tr>
-			<td><?php echo $fac->CodFacultad; ?></td>
-			<td><?php echo $fac->CodUniversidad; ?></td>
-			<td><?php echo $fac->Nombre; ?></td>
-			
-			<td><?php echo $fac->Estado; ?></td>
-			<td><button  class="btn btn-danger  glyphicon glyphicon-trash " name="<?php echo $fac->CodFacultad; ?>" ></button>
-				<button  class="btn btn-warning glyphicon glyphicon-pencil" name="as" ></button>
+			<td><?php echo $facultad['CodFacultad']; ?></td>
+			<td><?php echo $facultad['CodUniversidad']; ?></td>
+			<td><?php echo $facultad['Nombre']; ?></td>
+			<td><a class="btn btn-warning icon-pencil" href="<?php echo URL."Facultad/Modificar&id=".$facultad['CodFacultad']; ?>">
+							</a>
+				<a class="btn btn-danger icon-trash" href="<?php echo URL."Facultad/Eliminar&id=".$facultad['CodFacultad']; ?>"></a>
 			</td>
 		</tr>
-		<?php } ?>
+		<?php 
+			} 
+		}
+		?>
 	
 		</tbody>
 

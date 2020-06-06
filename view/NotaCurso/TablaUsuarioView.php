@@ -1,51 +1,33 @@
-<div class="table-responsive text-center">
-<fieldset>
-
-	<legend>Todos los Cursos</legend>
-	<table id="tabla" class="table table-striped table-bordered" >
-				
-	<thead>
-		<tr class="bg-primary">
-			<td>Codigo</td>
-			<td>Ciclo</td>
-			<td>Tipo</td>
-			<td>Nombre</td>
-			<td>Creditos</td>
-			<td>Nota</td>
-		</tr>
-	</thead>
-	<tbody>
-
-
-		<?php foreach ($datos as $cur) { 
-			$datos=$cur->CodCurso."||".$cur->NumCiclo."||".$cur->Tipo."||".$cur->Nombre."||".$cur->Creditos;
+<div class=" text-center">
+	<fieldset>
+		<legend>Todos los Cursos</legend>
+		<table id="tabla" class="table table-striped table-bordered" >		
+			<thead>
+				<tr class="bg-primary">
+					<th>Codigo</th>
+					<th>Ciclo</th>
+					<th>Tipo</th>
+					<th>Nombre</th>
+					<th>Creditos</th>
+					<th>Nota</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php 
+				foreach ($datos as $curso) { 
 			?>
-
-		<tr align="center">
-			<td><?php echo $cur->CodCurso; ?></td>
-			<td><?php echo $cur->NumCiclo; ?></td>
-			<td><?php echo $cur->Tipo; ?></td>
-			<td><?php echo $cur->Nombre; ?></td>
-			<td><?php echo $cur->Creditos; ?></td>
-			<td><?php 
-					if(isset($cur->Nota)){
-						echo $cur->Nota; 
-					}else{
-				?>
-					<button class="btn btn-warning icon-pencil" data-toggle="modal" data-target="#ModalAgregar" onclick="agregarFormClase('<?php echo $datos ?>')">
-						
-
-					</button>
-				<?php
-					}
-				?>	
-			</td>
-		</tr>
-		<?php } ?>
-	
-	</tbody>
-
-
-</table>
-</fieldset>
+				<tr align="center">
+					<td><?php echo $curso['CodCurso']; ?></td>
+					<td><?php echo $curso['Ciclo']; ?></td>
+					<td><?php echo $curso['tipo']; ?></td>
+					<td><?php echo $curso['nombre']; ?></td>
+					<td><?php echo $curso['creditos']; ?></td>
+					<td><?php echo $curso['nota']; ?></td>
+				</tr>
+			<?php 
+				} 
+			?>
+			</tbody>
+		</table>
+	</fieldset>
 </div>

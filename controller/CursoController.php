@@ -1,95 +1,116 @@
 <?php
-class CursoController extends ControladorBase{
-    
-    
-    public function __construct() {
-        parent::__construct();
+class CursoController extends MainController{
+ 
+    protected $curso;
+    public function __construct()
+    {
+        MainController::__construct();
+        $this->curso = new CursoModelo();
     }
-    
-    public function Index(){
-        
-        $cur= new CursoModelo();
-                $datos=$cur->ConsultarCursos();
-                $facus=$this->CargarFacultades();
-                $unis=$this->CargarUniversidades();
-                $escus=$this->CargarEscuelas();
-                $ciclos=$this->CargarCiclos();
-                $_POST['facus']=$facus;
-                $_POST['unis']=$unis;
-                $_POST['escus']=$escus;
-                $_POST['ciclos']=$ciclos;
+
+    public function Index(){ 
+        $datos=$this->curso->ConsultarCursos();
         $this->view("Curso","Index",$datos);
     }
-    public function Create(){
+
+    public function Nuevo(){
+        $_POST['universidades']=UniversidadModelo::ConsultarUniversidades();
+        $this->view("Curso","Nuevo");
+    }
+    
+    public function Guardar(){   
+        $escuela=mainModel::limpiar_cadena($_POST['escuelas']);//codescuela
+        $tipo=mainModel::limpiar_cadena($_POST['tipo']);//tipo
+        $nombre=mainModel::limpiar_cadena($_POST['nombre']);
+        $creditos=mainModel::limpiar_cadena($_POST['creditos']);
+        $ciclo=mainModel::limpiar_cadena($_POST['ciclos']);
         
-        $esc=$_POST['escuelas'];//codescuela
-        $tipo=$_POST['tipo'];//tipo
-        $nombre=$_POST['nombre'];
-        $creditos=$_POST['creditos'];
-        $ciclo=$_POST['ciclos'];
-        if($nombre!="" || $esc!="" || $tipo !="" || $creditos!=""||$ciclo=="0"||$ciclo="") 
+        $data=[
+            "codEscuela"=>$escuela,
+            "ciclo"=>$ciclo,
+            "tipo"=>$tipo,
+            "nombre"=>$nombre,
+            "creditos"=>$creditos
+        ];
+        $resultado=$this->curso->guardarCurso($data);
+        if($resultado=="0")
         {
-            $curso= new CursoModelo();
-            $curso->setNombre($nombre);
-            $curso->setCreditos($creditos) ;
-            $curso->setCodCiclo($ciclo);
-            $curso->setTipo($tipo);
-            $resultado=$curso->save();
-            if($resultado==1)//se guardó correctamente
-            {
-                $mensaje="Guadado con éxito";
-            }else if($resultado=="10")
-            {
-                $mensaje="Ya existe";
-            }    
-            else
-            {
-                $mensaje="Hubo un error" ;
-            }
+             $_POST['mensaje']="El curso ya existe";
+        }else if($resultado->rowCount()>0)
+        {
+             $_POST['mensaje']="Guardado con éxito";
+        }
+        else
+        {
+             $_POST['mensaje']="Hubo un error" ;
+        }
+         $this->Index();
+    }
+
+    public function Modificar($codCurso)
+    {
+        $codCurso=mainModel::limpiar_cadena($codCurso);
+        $dataCurso=$this->curso->ConsultarCursoModel($codCurso);
+        $dataCurso=$dataCurso->fetch();
+        
+        $escuela=EscuelaModelo::consultarEscuela($dataCurso['CodEscuela']);
+        $escuela=$escuela->fetch();
+        
+        $facultad=FacultadModelo::consultarFacultad($escuela['CodFacultad']);
+        $facultad=$facultad->fetch();
+
+        $_POST['facultad']=$escuela['CodFacultad'];
+        $_POST['universidad']=$facultad['CodUniversidad'];
+        $_POST['ciclos']=$escuela['Ciclos'];
+        $_POST['escuelas']=EscuelaModelo::consultarEscuelasAjax($escuela['CodFacultad']);
+        $_POST['facultades']=FacultadModelo::ConsultarFacultadesAjax($facultad['CodUniversidad']);
+        $_POST['universidades']=UniversidadModelo::ConsultarUniversidades();
+       
+        $this->view("Curso","Modificar",$dataCurso); 
+    } 
+    public function Actualizar()
+    {
+        $codCurso=mainModel::limpiar_cadena($_POST['codCurso']);
+        $escuela=mainModel::limpiar_cadena($_POST['escuelas']);
+        $nombre=mainModel::limpiar_cadena($_POST['nombre']);
+        $ciclos=mainModel::limpiar_cadena($_POST['ciclos']);
+        $tipo=mainModel::limpiar_cadena($_POST['tipo']);
+        $creditos=mainModel::limpiar_cadena($_POST['creditos']);
+        $datos=[
+            "codCurso"=>$codCurso,
+            "codEscuela"=>$escuela,
+            "ciclo"=>$ciclo,
+            "tipo"=>$tipo,
+            "nombre"=>$nombre,
+            "creditos"=>$creditos
+        ];
+        $resultado=$this->curso->actualizarCurso($datos);
+        if($resultado=="0")
+        {
+            $mensaje="El curso ya existe";
+        }elseif ($resultado->rowCount()==0) {
+            $mensaje="Error al guardar";
         }else{
-            $mensaje="complete el formulario del Crear Curso";
+            $mensaje="Actualizado con éxito";  
         }
         $_POST['mensaje']=$mensaje;
-         $this->Index();
-
+        $this->Index();
     }
 
-    public function CargarUniversidades()
+    public function Eliminar($id)
     {
-        $uni= new UniversidadModelo();
-        $datos=$uni->ConsultarUniversidades();
-        $arr=array();
-        foreach ($datos as $obj) 
-        {
-            if($obj->Estado=='1')
-            {
-                $arr[$obj->CodUniversidad]=$obj->Nombre;
+            $id=mainModel::limpiar_cadena($id);
+
+            $data=$this->curso->eliminarCurso($id);
+            if($data->rowCount()>0){
+                $_POST['mensaje']="Se eliminó correctamente";
+            }else{
+                $_POST['mensaje']="Hubo un error en Eliminar";
             }
-        } 
-        return $arr;
+            $this->Index();
+        }
 
-    }
-    public function CargarFacultades()
-    {
-        $fac= new FacultadModelo();
-        $datosF=$fac->ConsultarFacultades();
-
-        return $datosF;
-    }
-    public function CargarEscuelas()
-    {
-        $fac= new EscuelaModelo();
-        $datosF=$fac->ConsultarEscuelas();
-
-        return $datosF;
-    }
-    public function CargarCiclos()
-    {
-        $fac= new CicloModelo();
-        $datosF=$fac->ConsultarCiclos();
-
-        return $datosF;
-    }
+  
 }
     
 ?>

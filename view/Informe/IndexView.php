@@ -1,7 +1,7 @@
 
 <div align="center">
 	<h2>INFORME ACADÉMICO </h2>
-	<h3 ><?php echo $usuario->CodEstudiante."-".$usuario->nombre." ".$usuario->apellidos; ?></h3>
+	<h3 ><?php echo $usuario['CodEstudiante']."-".$usuario['nombre']." ".$usuario['apellidos']; ?></h3>
 	<br><br><br>
 	<div>
 		<?php

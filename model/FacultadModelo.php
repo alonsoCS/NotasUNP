@@ -1,86 +1,70 @@
 <?php
 
-class FacultadModelo
-{
-	
-	private $CodFacultad;/**/
-	private $CodUniversidad;
-	private $Nombre;/**/
-	private $Estado; 
-	
-	public function setCodigo($code)
+class FacultadModelo extends mainModel
+{	
+	public function ConsultarFacultades()
 	{
-		$this->CodFacultad=$code;
-	}
-	public function getCodigo() {
-        return $this->CodFacultad;
-    }
-
-    public function setNombre($nombre)
-	{
-		$this->Nombre=$nombre;
-	}
-	public function getNombre() {
-        return $this->Nombre;
-    }
-
-    public function setCodUniversidad($code)
-	{
-		$this->CodUniversidad=$code;
-	}
-	public function getCodUniversidad() {
-        return $this->CodUniversidad;
-    }
-
-    public function setEstado($estado)
-	{
-		$this->Estado=$estado;
-	}
-	public function getEstado() {
-        return $this->Estado;
-    }
-	
-	public function ConsultarFacultades($CodFac=false)
-	{
-		if($CodFac==false)
-		{
-			$sql = "SELECT * FROM facultad ";
-		}else{
-			$sql = "SELECT * FROM facultad WHERE CodFacultad='".$CodFac."'";
-		}
-		
-		$conn=Coneccion::getConeccion();
-		$query=$conn->query($sql);
-		$resultSet=array();
-        while ($row = $query->fetch_object()) {
-           $resultSet[]=$row;
-        }
-        Coneccion::finalizar();
-		return $resultSet;
+		$sql=mainModel::ejecutar_consulta_simple("SELECT * FROM facultad ");
+ 		return $sql->fetchAll();
 	} 
-		
-	public function save() {
-		if(!$this->Existe())
-		{
- 			$sql = "INSERT INTO facultad (CodUniversidad, Nombre, Estado) VALUES ('".$this->getCodUniversidad()."','".$this->getNombre()."' ,'1' )";
- 			$con=Coneccion::getConeccion();
-			$query=$con->query($sql);
-			Coneccion::finalizar();
- 			return $query;
- 		}else{
- 			return "10";
- 		}
- 	}
- 	private function Existe()
+	public function ConsultarFacultadesAjax($CodUniversidad)
+	{
+		$sql=mainModel::conectar()->prepare("SELECT * FROM facultad WHERE CodUniversidad=:Codigo ");
+		$sql->bindParam(':Codigo',$CodUniversidad);
+		$sql->execute();
+		return $sql;
+	} 
+	public function ConsultarfacultadModel($datos)
  	{
- 		$sql = "SELECT * FROM facultad WHERE CodUniversidad='".$this->getCodUniversidad()."' AND Nombre='".$this->getNombre()."'";
-		$conn=Coneccion::getConeccion();
-		$query=$conn->query($sql);
-		$result=false;
-		while ($row = $query->fetch_object()) {
-           $result=true;
-        }
-        Coneccion::finalizar();
-		return $result;
+ 		$sql=mainModel::conectar()->prepare("SELECT * FROM facultad WHERE CodUniversidad=:Codigo AND Nombre=:Nombre");
+		$sql->bindParam(':Codigo',$datos['codigo']);
+		$sql->bindParam(':Nombre',$datos['nombre']);
+		$sql->execute();
+		return $sql;
+ 	}
+	public function consultarFacultad($codFacultad)
+	{
+		$sql=mainModel::conectar()->prepare("SELECT * FROM facultad WHERE CodFacultad=:Codigo LIMIT 1");
+		$sql->bindParam(':Codigo',$codFacultad);
+		$sql->execute();
+		return $sql;
+ 	}
+		
+	public function guardarFacultad($datos)
+	{
+		$existe=self::ConsultarfacultadModel($datos);
+		if($existe->rowCount() == 0)
+		{
+			$sql=mainModel::conectar()->prepare("INSERT INTO facultad (CodUniversidad, Nombre) VALUES (:Codigo,:Nombre  )");
+			$sql->bindParam(':Codigo',$datos['codigo']);
+			$sql->bindParam(':Nombre',$datos['nombre']);
+			$sql->execute();
+			return $sql;
+		}else{
+			return 0;
+		}
+ 	}
+
+ 	public function actualizarFacultad($datos){
+ 		$existe=self::ConsultarfacultadModel($datos);
+ 		$facultad=$existe->fetch();
+		if($existe->rowCount()==0 || $facultad['CodFacultad']==$datos['codFacultad'])
+		{
+ 			$sql=mainModel::conectar()->prepare("UPDATE facultad SET CodUniversidad=:CodUniversidad, Nombre=:Nombre  WHERE CodFacultad=:CodFacultad ");
+ 			$sql->bindParam(':CodUniversidad',$datos['codigo']);
+			$sql->bindParam(':Nombre',$datos['nombre']);
+			$sql->bindParam(':CodFacultad',$datos['codFacultad']);
+			$sql->execute();
+			return $sql;
+		}else{
+			return 0;
+		}
+ 	}
+ 	public function eliminarFacultad($codigo)
+ 	{
+ 		$sql=mainModel::conectar()->prepare("DELETE FROM facultad WHERE CodFacultad=:codigo");
+ 		$sql->bindParam(':codigo',$codigo);
+		$sql->execute();
+ 		return $sql;
  	}
 }

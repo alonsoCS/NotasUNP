@@ -30,19 +30,21 @@
 					}else{ 
 						include "Modelos/NavUsuario.php";
 					}
-				} 
+				}  
 			?>
 		</div>
 	</header>
 	<main>
 		<section>
 			<br>
-			<?php include_once 'view/'.$controlador.'/'.$vista.'View.php'; ?>
+			<?php include_once './view/'.$controlador.'/'.$vista.'View.php'; ?>
 			<br>
 		</section>
 	</main>
 	<footer>
 		<p align="center">&copy;Creado por JACS - Piura - <?php echo date("Y"); ?></p>
 	</footer>
+
+	<script type="text/javascript" src="<?php echo URL;?>js/formularios.js"></script>
 </body>
 </html>

@@ -1,42 +1,41 @@
 <?php 
-$informe=$_POST['informacion'];
-$primero=$informe[0];
-$segundo=$informe[1];
+    $informacion=$_POST['informacion'];
+    $informe= $_POST['informe'];
  ?>
  <div class="table-responsive">
 <table class="table table-condensed">
             <tbody>
                 <tr>
                     <td>Su Universidad es: </td>
-                    <td><?php echo $primero[2]; ?></td>
+                    <td><?php echo $informacion["Universidad"]; ?></td>
                 </tr>
                 <tr>
                     <td>Su Facultadad es:</td>
-                    <td><?php echo $primero[1]; ?></td>
+                    <td><?php echo $informacion["Facultad"]; ?></td>
                 </tr>
                 <tr>
                     <td>Su Escuela es: </td>
-                    <td><?php echo $primero[0]; ?></td>
+                    <td><?php echo $informacion["Escuela"]; ?></td>
                 </tr>
                 <tr>
                     <td>Sus cursos llevados:</td>
-                    <td><?php echo $segundo[1]; ?></td>
+                    <td><?php echo $informe["totalCursos"]; ?></td>
                 </tr>
                 <tr>
                     <td>Sus cursos Aprobados obligatorios son:</td>
-                    <td><?php echo $segundo[3];  ?></td>
+                    <td><?php echo $informe["cursoAproOblig"];  ?></td>
                 </tr>
                  <tr>
                     <td>Sus cursos Aprobados electivos son:</td>
-                    <td><?php echo $segundo[4]; ?> </td>
+                    <td><?php echo $informe["cursoAproElec"]; ?> </td>
                 </tr>
                 <tr>
                     <td>Su Promedio Ponderado Acumulado es:</td>
-                    <td><?php echo $segundo[0]; ?></td>
+                    <td><?php echo $informe["ponderado"]; ?></td>
                 </tr>
                 <tr>
                     <td>Tiene aprobados en su historial un total de:</td>
-                    <td><?php echo $segundo[2];  ?> Creditos</td>
+                    <td><?php echo $informe["creditosApro"];  ?> Creditos</td>
                 </tr>
                
             </tbody>

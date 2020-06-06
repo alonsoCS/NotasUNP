@@ -1,22 +1,35 @@
 <?php
-class NotaCursoController extends ControladorBase{
-    
-    
-    public function __construct() {
-        parent::__construct();
+class NotaCursoController extends mainController{
+    public function __construct()
+    {
+        MainController::__construct();
     }
-    
+
     public function Index(){
-        
+        $datos=array();
         $usuario=$_SESSION['user'];
         if($usuario!="Administrador")
         {
-            $curso=new CursoModelo();
-            $datos=$curso->ConsultarCursosUsuario($usuario->CodEscuela,$usuario->CodEstudiante);
+            $ciclos=new CicloModelo();
+            $dataCiclos=$ciclos->ConsultarCicloEscuela($usuario['CodEscuela']);
+            foreach ($dataCiclos as  $rowCiclo) {
+                $cursos=new CursoModelo();
+                $data=[
+                    "codCiclo"=>$rowCiclo["CodCiclo"],
+                    "codEstudiante"=>$usuario["CodEstudiante"]
+                ];
+                $dataCursos=$cursos->ConsultarCursosCiclo($data);
+                foreach ($dataCursos as $curso) {
+                    $curso['NumCiclo']=$rowCiclo["Numero"];
+                    $datos[]=$curso;
+                }
+            }
+            $this->view("NotaCurso","Index",$datos);
         }else{
-            $datos="aun no hay";
+             $_POST['universidades']=UniversidadModelo::ConsultarUniversidades();
+             $this->view("NotaCurso","Index");
         }
-        $this->view("NotaCurso","Index",$datos);
+        
     }
     public function CargarCursosUsuario($codUser){
         $datos=array();
@@ -40,6 +53,7 @@ class NotaCursoController extends ControladorBase{
         $this->Index();
     }
 }
+
     
 
     

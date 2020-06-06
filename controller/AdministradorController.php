@@ -1,16 +1,19 @@
 <?php
-class AdministradorController extends ControladorBase{
-    
-	
-    public function __construct() {
-        parent::__construct();
+class AdministradorController extends MainController{
+
+    public function __construct()
+    {
+        MainController::__construct();
     }
     
     public function Index(){
-        
-       
         //Cargamos la vista index y le pasamos valores
-        $this->view("Administrador","Index");
+        if(isset($_SESSION['user'])){
+
+            $this->view("Administrador","Index");
+        }else{
+            $this->view("Login","Index");
+        }
     }
     
 

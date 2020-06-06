@@ -13,32 +13,33 @@
 					<th>Sexo</th>
 					<th>Email</th>
 					<th>Contraseña</th>
-					<th>Estado</th>
 					<th>operaciones</th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php 
+				if(isset($datos))
+				{
 					foreach ($datos as $estudiante) 
 					{ 
 				?>
 				<tr>
-					<td><?php echo $estudiante->CodEstudiante; ?></td>
-					<td><?php echo $estudiante->CodEscuela; ?></td>
-					<td><?php echo $estudiante->nombre; ?></td>
-					<td><?php echo $estudiante->apellidos; ?></td>
-					<td><?php echo $estudiante->dni; ?></td>
-					<td><?php echo $estudiante->direccion; ?></td>
-					<td><?php echo $estudiante->sexo; ?></td>
-					<td><?php echo $estudiante->email; ?></td>
-					<td><?php echo $estudiante->contraseña; ?></td>
-					<td><?php echo $estudiante->Estado; ?></td>
-					<td><button  class="btn btn-danger  icon-trash " name="<?php echo $cur->CodCurso; ?>" ></button>
-						<button  class="btn btn-warning icon-pencil" name="as" ></button>
+					<td><?php echo $estudiante['CodEstudiante']; ?></td>
+					<td><?php echo $estudiante['CodEscuela']; ?></td>
+					<td><?php echo $estudiante['nombre']; ?></td>
+					<td><?php echo $estudiante['apellidos']; ?></td>
+					<td><?php echo $estudiante['dni']; ?></td>
+					<td><?php echo $estudiante['direccion']; ?></td>
+					<td><?php echo $estudiante['sexo']; ?></td>
+					<td><?php echo $estudiante['email']; ?></td>
+					<td><?php echo $estudiante['contraseña']; ?></td>
+					<td><a class="btn btn-warning icon-pencil" href="<?php echo URL."Estudiante/Modificar&id=".$estudiante['CodEstudiante']; ?>"></a>
+						<a class="btn btn-danger icon-trash" href="<?php echo URL."Estudiante/Eliminar&id=".$estudiante['CodEstudiante']; ?>"></a>
 					</td>
 				</tr>
 				<?php 
-					} 
+					}
+				} 
 				?>
 			</tbody>
 		</table>

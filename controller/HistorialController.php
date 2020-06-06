@@ -1,21 +1,29 @@
 <?php
-class HistorialController extends ControladorBase{
-    
-    
-    public function __construct() {
-        parent::__construct();
+class HistorialController extends MainController{
+  
+    public function __construct()
+    {
+       
+      	MainController::__construct();
     }
-    
+
     public function Index(){
        
-        $usuario=$_SESSION['user'];
-        $curso=new CursoModelo();
-        $datos=$curso->ConsultarCursosHistorial($usuario->CodEscuela,$usuario->CodEstudiante);
+        $usuario = $_SESSION['user'];
+        $datos = $this->ConsultarCursosHistorial($usuario['CodEscuela'],$usuario['CodEstudiante']);
         $this->view("Historial","Index",$datos);
     }
-    public function Create(){
-        
-    }
+
+    protected function ConsultarCursosHistorial($codEscuela,$codEstudiante)
+	{
+        $cursos=new CursoModelo();
+        $datos=[
+        		"codEscuela"=>$codEscuela,
+        		"codEstudiante"=>$codEstudiante
+        ];
+        $dataCursos=$cursos->ConsultarCursosEstudiante($datos);
+        return $dataCursos;
+	} 
 }
     
 

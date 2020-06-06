@@ -11,27 +11,33 @@
 			<th>Codigo</th>
 			<th>Cred. Obli.</th> 
 			<th>Cred. Elec.</th>
-			
+			<th>Ciclos</th>
 			<th >operaciones</th>
 		</tr>
 	</thead>
 	<tbody>
 
-		<?php foreach ($datos as $esc) { ?>
+	<?php 
+	if(isset($datos))
+	{
+		foreach ($datos as $escuela) { ?>
 
 		<tr>
-			<td><?php echo $esc->CodEscuela; ?></td>
-			<td><?php echo $esc->CodFacultad; ?></td>
-			<td><?php echo $esc->Nombre; ?></td>
-			<td><?php echo $esc->Codigo ;?></td>
-			<td><?php echo $esc->CresObli ;?></td>
-			<td><?php echo $esc->CresElec ;?></td>
+			<td><?php echo $escuela['CodEscuela']; ?></td>
+			<td><?php echo $escuela['CodFacultad']; ?></td>
+			<td><?php echo $escuela['Nombre']; ?></td>
+			<td><?php echo $escuela['Codigo'] ;?></td>
+			<td><?php echo $escuela['CresObli'] ;?></td>
+			<td><?php echo $escuela['CresElec'] ;?></td>
+			<td><?php echo $escuela['Ciclos'] ;?></td>
 			
-			<td><button  class="btn btn-danger  icon-trash " name="<?php echo $uni->CodUniversidad; ?>" ></button>
-				<button  class="btn btn-warning icon-pencil" name="as" ></button>
+			<td><a class="btn btn-warning icon-pencil" href="<?php echo URL."Escuela/Modificar&id=".$escuela['CodEscuela']; ?>">
+							</a>
+				<a class="btn btn-danger icon-trash" href="<?php echo URL."Escuela/Eliminar&id=".$escuela['CodEscuela']; ?>"></a>
 			</td>
 		</tr>
-		<?php } ?>
+		<?php } 
+	}?>
 	
 	</tbody>
 

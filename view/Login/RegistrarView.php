@@ -1,7 +1,7 @@
 <div class="container">
 <fieldset>
 	<legend>Nuevo Estudiante</legend>
-	<form method="post" action="<?php echo $helper->url("Login","Guardar"); ?>" onsubmit="return Verificar();" >
+	<form method="post" action="" onsubmit="return Verificar();" >
 		<br>
 		<div class="row">
   			<div class="col-lg-6">

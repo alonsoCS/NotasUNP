@@ -12,15 +12,15 @@
 		</tr>
 	</thead>
 	<tbody>
-		<?php foreach ($datos as $cur) { 
+		<?php foreach ($datos as $curso) { 
 		?>
 
 		<tr align="center">
-			<td><?php echo $cur->CodCurso; ?></td>
-			<td><?php echo $cur->NumCiclo; ?></td>
-			<td><?php echo $cur->Tipo; ?></td>
-			<td><?php echo $cur->Nombre; ?></td>
-			<td><?php echo $cur->Creditos; ?></td>
+			<td><?php echo $curso['CodCurso']; ?></td>
+			<td><?php echo $curso['NumCiclo']; ?></td>
+			<td><?php echo $curso['Tipo']; ?></td>
+			<td><?php echo $curso['Nombre']; ?></td>
+			<td><?php echo $curso['Creditos']; ?></td>
 		</tr>
 			<?php 		
 					

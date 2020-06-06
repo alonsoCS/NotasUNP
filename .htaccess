@@ -1,4 +1,5 @@
-RewriteEngine On 
 Options All -Indexes
+
 RewriteEngine On
-RewriteRule ^([a-zA-Z0-9/ñÑ-]+)$ index.php/$1/$2
+
+RewriteRule ^([a-zA-Z0-9/&=]+)$ index.php?views=$1&id=$1
