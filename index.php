@@ -6,7 +6,7 @@ session_start(['name'=>'Notas']);
     require_once "config/router.php";
 
     require_once "config/MainController.php";
-
+    //hubo un cambo
     require_once "config/mainModel.php";
     
     
