@@ -10,7 +10,7 @@ class MainController{
 
 
 
-	public function view($controlador,$vista,$datos=False){//vistas
+	public function view($controlador,$vista,$datos=false){//vistas
         include_once 'view/main.php';
     }
     

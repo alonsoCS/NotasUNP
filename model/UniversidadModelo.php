@@ -5,62 +5,85 @@ class UniversidadModelo extends mainModel
 	public function ConsultarUniversidades()
 	{
 		$sql=mainModel::ejecutar_consulta_simple("SELECT * FROM universidad ");
- 		return $sql->fetchAll();
+		return $sql;
 	} 
 
 	public function consultarUniversidad($Codigo)
- 	{
- 		$sql=mainModel::conectar()->prepare("SELECT * FROM universidad WHERE CodUniversidad=:codigo LIMIT 1");
- 		$sql->bindParam(':codigo',$Codigo);
+ 	{ 
+ 		$con=mainModel::conectar();
+ 		$sql=$con->prepare("SELECT * FROM universidad WHERE CodUniversidad=? LIMIT 1");
+	 	$sql->bind_param('i',$Codigo);
 		$sql->execute();
- 		return $sql;
+		
+		$resultado=$sql->get_result();
+		if($resultado->num_rows > 0)
+		{
+			$universidad=$resultado->fetch_assoc();	
+		}else{
+			$universidad='1';
+		}
+		$sql->close();
+		$con->close();
+ 		return $universidad;
  	}
+
  	public function consultarUniversidadModel($nombre)
  	{
- 		$sql=mainModel::conectar()->prepare("SELECT CodUniversidad FROM universidad WHERE nombre=:Nombre LIMIT 1");
- 		$sql->bindParam(':Nombre',$nombre);
+ 		$con=mainModel::conectar();
+ 		$sql=$con->prepare("SELECT CodUniversidad FROM universidad WHERE nombre=? LIMIT 1");
+ 		$sql->bind_param('s',$nombre);
 		$sql->execute();
- 		return $sql;
+		$resultado=$sql->get_result();
+		$sql->close();
+		$con->close();
+ 		return $resultado;
  	}
 		
 	public function crearUniversidad($datos)
 	{
-		$existe=self::consultarUniversidadModel($datos['nombre']);
-		if($existe->rowCount()==0)
+		$uniExiste=self::consultarUniversidadModel($datos['nombre']);
+		if($uniExiste->num_rows==0)
 		{
-			$sql=mainModel::conectar()->prepare("INSERT INTO universidad (Nombre, Ciudad,Rector) VALUES (:Nombre,:Ciudad,:Rector )");
-			$sql->bindParam(':Nombre',$datos['nombre']);
-			$sql->bindParam(':Ciudad',$datos['ciudad']);
-			$sql->bindParam(':Rector',$datos['rector']);
+			$con=mainModel::conectar();
+			$sql=$con->prepare("INSERT INTO universidad (Nombre, Ciudad,Rector) VALUES (?,?,? )");
+			$sql->bind_param('sss',$datos['nombre'],$datos['ciudad'],$datos['rector']);
 			$sql->execute();
-			return $sql;
+			$resultado=$sql->affected_rows;
+			$sql->close();
+			$con->close();
+	 		return $resultado;
 		}else{
-			return 0;
+			return 'existe';
 		}
  	}
  	
 
  	public function actualizarUniversidad($datos){
  		$existe=self::consultarUniversidadModel($datos['nombre']);
- 		$universidad=$existe->fetch();
- 		if($existe->rowCount()=="0" || $universidad['CodUniversidad']==$datos['codigo'])
+ 		$universidad=$existe->fetch_assoc();
+ 		if($existe->num_rows=='0' || $universidad['CodUniversidad']==$datos['codigo'])
  		{
- 			$sql=mainModel::conectar()->prepare("UPDATE universidad SET Nombre=:Nombre, Ciudad=:Ciudad, Rector= :Rector WHERE CodUniversidad=:Codigo");
- 			$sql->bindParam(':Codigo',$datos['codigo']);
-			$sql->bindParam(':Nombre',$datos['nombre']);
-			$sql->bindParam(':Ciudad',$datos['ciudad']);
-			$sql->bindParam(':Rector',$datos['rector']);
+ 			$con=mainModel::conectar();
+ 			$sql=$con->prepare("UPDATE universidad SET Nombre=?, Ciudad=?, Rector=? WHERE CodUniversidad=? ");
+ 			$sql->bind_param('sssi',$datos['nombre'],$datos['ciudad'],$datos['rector'],$datos['codigo']);
 			$sql->execute();
-			return $sql;
+			$resultado=$sql->affected_rows;
+			$sql->close();
+			$con->close();
+	 		return $resultado;
 		}else{
- 			return "0";
+ 			return "existe";
  		}
  	}
  	public function eliminarUniversidad($codigo)
  	{
- 		$sql=mainModel::conectar()->prepare("DELETE FROM universidad WHERE CodUniversidad=:codigo");
- 		$sql->bindParam(':codigo',$codigo);
+ 		$con=mainModel::conectar();
+ 		$sql=$con->prepare("DELETE FROM universidad WHERE CodUniversidad=?");
+ 		$sql->bind_param('i',$codigo);
 		$sql->execute();
- 		return $sql;
+		$resultado=$sql->affected_rows;
+		$sql->close();
+		$con->close();
+ 		return $resultado;
  	}
 }

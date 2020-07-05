@@ -7,11 +7,11 @@
 
  		$escuelas=new EscuelaModelo();
  		$escuelas=$escuelas->consultarEscuelasAjax($_POST['codFacultad']);
- 		$data="";
+ 		$data=array();
  		foreach ($escuelas as $escuela) {
- 			$data=$data."/".$escuela['Nombre']."-".$escuela['CodEscuela']; 
+ 			$data[]=$escuela;
  		}
- 		echo $data;
+ 		echo json_encode($data);
  	}elseif(isset($_POST['codEscuela']))
  	{	
  		require_once "../config/mainModel.php";	
@@ -19,8 +19,7 @@
  		//crear nueva universidad
 
  		$escuelas=new EscuelaModelo();
- 		$escuelas=$escuelas->consultarEscuela($_POST['codEscuela']);
- 		$escuela=$escuelas->fetch();
+ 		$escuela=$escuelas->consultarEscuela($_POST['codEscuela']);
  		echo $escuela['Ciclos'];
  	}
  	else

@@ -12,7 +12,7 @@ class HistorialController extends MainController{
         $usuario = $_SESSION['user'];
         $datos = $this->ConsultarCursosHistorial($usuario['CodEscuela'],$usuario['CodEstudiante']);
         $this->view("Historial","Index",$datos);
-    }
+    } 
 
     protected function ConsultarCursosHistorial($codEscuela,$codEstudiante)
 	{
@@ -23,7 +23,7 @@ class HistorialController extends MainController{
         ];
         $dataCursos=$cursos->ConsultarCursosEstudiante($datos);
         return $dataCursos;
-	} 
+    } 
 }
     
 

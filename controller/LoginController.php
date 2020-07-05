@@ -23,28 +23,33 @@
             if($user=="7683807807" && $password=="alonso")
             {   
                 $_SESSION['user']="Administrador";
-                 header("Location:".URL."Administrador");
+                 header("Location:".URL."Administrador/Index");
                  exit;
             }else
             {
-                $resultado=$this->EstudianteModelo->BuscarEstudiante($user);
-                if($resultado->rowCount()==1)
+                $estudiante=$this->EstudianteModelo->BuscarEstudiante($user);
+                if($estudiante!='0')
                 {
-                    $row=$resultado->fetch();
-                    if($row['contraseña']==$password)
+                    if($estudiante!='1')
                     {
-                        
-                        $_SESSION['user']=$row;
-                         header("Location:".URL."Usuario");
-                         exit;
-                    }else{
-                        $_POST['mensaje']="contraseña incorrecta";
+                        if($estudiante['contraseña']==$password)
+                        {
+                            $_SESSION['user']=$estudiante;
+                             header("Location: ".URL."Usuario/Index");
+                             exit;
+                        }else{
+                            $_SESSION['user']=$user;
+                            $_POST['mensaje']="contraseña incorrecta";
+                            $this->Index();
+                        }
+                    }else
+                    {
+                        $_POST['mensaje']="usuario no existe";
                         $this->Index();
-                    }
-                }else
-                {
-                    $_POST['mensaje']="usuario no existe";
-                    $this->Index();
+                    }   
+                }else{
+                    $_POST['mensaje']="Error en la conexion";
+                    $this->Index(); 
                 }
             }    
         }

@@ -23,6 +23,7 @@ function cargarAccion($controller,$accion,$id=false)
     {
         if(!$id){
             $controller->$accion();//invocando accion
+           
         }else{
             $controller->$accion($id);
         }

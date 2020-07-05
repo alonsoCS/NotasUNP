@@ -1,5 +1,4 @@
 
-<div >
 	<h2>UNIVERSIDADES</h2>
 
 	<div id="alerta">
@@ -7,10 +6,10 @@
 			echo "<p>".$_POST['mensaje']."</p>";
 		} ?>
 	</div>
-	<a href="<?php echo URL;?>Universidad/Nuevo" class="btn btn-primary">Nueva Universidad</a>
-	<div id="contenido" >
+	<a href="<?php echo URL;?>Universidad/Nuevo" class="button centrar">Nueva Universidad</a>
+
 		<?php
 		include "TablaView.php"; 
 		?>
-	</div>
-</div>
+	
+

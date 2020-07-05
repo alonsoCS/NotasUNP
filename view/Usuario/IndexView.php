@@ -3,10 +3,10 @@
  	{
  		$usuario=$_SESSION['user'];
  	}else{
-
+ 		
  	}
  ?>
-<div align="center" class="Padmin">
+<div align="center" >
 	<br>
 	<h2>BIENVENIDO    <?php echo  strtoupper($usuario['nombre']." ".$usuario['apellidos']); ?></h2>	
 	<br>

@@ -3,29 +3,37 @@
 class NotaCursoModelo extends mainModel
 {
 	
-	public function ConsultarNotas()
-	{
-		$sql=mainModel::ejecutar_consulta_simple("SELECT * FROM notacurso ");
-		return $sql;
-	}
 	public function ConsultarNotaCurso($datos)
 	{
-		$sql=mainModel::conectar()->prepare("SELECT Nota FROM notacurso WHERE CodCurso=:codCurso AND CodEstudiante=:codEstudiante LIMIT 1");
-		$sql->bindParam(':codCurso',$datos['codCurso']);
-		$sql->bindParam(':codEstudiante',$datos['codEstudiante']);
+		$con=mainModel::conectar();
+		$sql=$con->prepare("SELECT Nota FROM notacurso WHERE CodCurso=? AND CodEstudiante=? LIMIT 1");
+		$sql->bind_param('is',$datos['codCurso'],$datos['codEstudiante']);
 		$sql->execute();
-		return $sql;
-	} 
-		
-	public function guardar($datos) {
-		if($this->ConsultarNotaCurso($datos)->rowCount()==0){
- 			$sql=mainModel::conectar()->prepare("INSERT INTO notacurso (CodCurso, CodEstudiante,Nota) VALUES (:codCurso, :codEstudiante, :nota )");
-			$sql->bindParam(':codCurso',$datos['codCurso']);
-			$sql->bindParam(':codEstudiante',$datos['codEstudiante']);
-			$sql->execute();
-			return $sql;
+		$resultado=$sql->get_result();
+		if($resultado->num_rows > 0)
+		{
+			$notaCurso=$resultado->fetch_assoc();	
 		}else{
-			return null;
+			$notaCurso='1';
+		}
+		$sql->close();
+		$con->close();
+ 		return $notaCurso;
+	}  
+		
+	public function guardarNota($datos) {
+		$existe=$this->ConsultarNotaCurso($datos);
+		if($existe=='1'){
+			$con=mainModel::conectar();
+ 			$sql=$con->prepare("INSERT INTO notacurso (CodCurso, CodEstudiante,Nota) VALUES (?, ?, ? )");
+			$sql->bind_param('isi',$datos['codCurso'],$datos['codEstudiante'],$datos['nota']);
+			$sql->execute();
+			$resultado=$sql->affected_rows;
+			$sql->close();
+			$con->close();
+	 		return $resultado;
+		}else{
+			return "existe";
 		}
  	}
  	

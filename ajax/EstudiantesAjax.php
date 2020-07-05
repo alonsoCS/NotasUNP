@@ -7,11 +7,11 @@
 
  		$estudiantes=new EstudianteModelo();
  		$estudiantes=$estudiantes->consultarEstudiantesAjax($_POST['codEscuela']);
- 		$data="";
+ 		$data=array();
  		foreach ($estudiantes as $estud) {
- 			$data=$data."/".$estud['nombre']." ".$estud['apellidos']."-".$estud['CodEstudiante']; 
+ 			$data[]=$estud;
  		}
- 		echo $data;
+ 		echo json_encode($data);
  	}
  	else
  	{

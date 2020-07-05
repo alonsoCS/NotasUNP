@@ -1,8 +1,6 @@
-<fieldset>
-	<legend>Todos los Cursos</legend>
-
-	<div class="table-responsive">
-		<table id="tabla" class="table table-striped table-bordered" >	
+<div class="tabla-responsiva">
+		<h3>Todos los Cursos</h3>
+		<table id="tabla" class="tabla" >	
 			<thead>
 				<tr class="bg-primary">
 					<th>Codigo</th>
@@ -40,4 +38,3 @@
 			</tbody>		
 		</table>
 	</div>
-</fieldset>

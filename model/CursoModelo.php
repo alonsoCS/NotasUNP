@@ -2,86 +2,106 @@
 	
 class CursoModelo extends mainModel
 {
-	
 	public function ConsultarCursos()
 	{
 		$sql=mainModel::ejecutar_consulta_simple("SELECT * FROM curso ");
- 		return $sql->fetchAll();
+ 		return $sql;
 	} 
 
 	public function ConsultarCursosEstudiante($datos)
 	{
-		$sql=mainModel::conectar()->prepare("SELECT e.CodCurso,e.Ciclo,e.tipo,e.nombre, e.creditos, d.Nota AS nota FROM curso AS e INNER JOIN notacurso AS d ON e.CodCurso = d.CodCurso AND d.CodEstudiante=:codEstudiante  WHERE  e.CodEscuela=:Codigo ");
-		$sql->bindParam(':Codigo',$datos['codEscuela']);
-		$sql->bindParam(':codEstudiante',$datos['codEstudiante']);
+		$con=mainModel::conectar();
+		$sql=$con->prepare("SELECT e.CodCurso,e.Ciclo,e.tipo,e.nombre, e.creditos, d.Nota AS nota FROM curso AS e INNER JOIN notacurso AS d ON e.CodCurso = d.CodCurso AND d.CodEstudiante=? WHERE  e.CodEscuela=?");
+		$sql->bind_param('ii',$datos['codEstudiante'],$datos['codEscuela']);
 		$sql->execute();
-		return $sql;
+		$resultado=$sql->get_result();
+		$sql->close();
+		$con->close();
+ 		return $resultado;
 	}
 	public function ConsultarCursosCicloGeneral($codEscuela)
 	{
-		$sql=mainModel::conectar()->prepare("SELECT CodCurso,tipo,nombre, creditos  FROM curso  WHERE CodEscuela=:Codigo ");
-		$sql->bindParam(':Codigo',$codEscuela);
+		$con=mainModel::conectar();
+		$sql=$con->prepare("SELECT * FROM curso  WHERE CodEscuela=? ");
+		$sql->bind_param('i',$codEscuela);
 		$sql->execute();
-		return $sql;
+		$resultado=$sql->get_result();
+		$sql->close();
+		$con->close();
+ 		return $resultado;
 	}
-	public function ConsultarCursoModel($codCurso)
+	public function ConsultarCursoModel($datos)
 	{
-		$sql=mainModel::conectar()->prepare("SELECT * FROM curso  WHERE CodCurso=:Codigo ");
-		$sql->bindParam(':Codigo',$codCurso);
+		$con=mainModel::conectar();
+		$sql=$con->prepare("SELECT * FROM curso WHERE nombre=? AND CodEscuela=? LIMIT 1");
+		$sql->bind_param('si',$datos['nombre'],$datos['codEscuela']);
 		$sql->execute();
-		return $sql;
+		$resultado=$sql->get_result();
+		$sql->close();
+		$con->close();
+ 		return $resultado;
 	}
-	public function ConsultarCurso($codEscuela,$nombre)
+	public function ConsultarCurso($codCurso)
  	{
-		$sql=mainModel::conectar()->prepare("SELECT * FROM curso WHERE nombre=:Nombre AND CodEscuela=:Codigo LIMIT 1");
-		$sql->bindParam(':Codigo',$codEscuela);
-		$sql->bindParam(':Nombre',$nombre);
+ 		$con=mainModel::conectar();
+		$sql=$con->prepare("SELECT * FROM curso  WHERE CodCurso=? ");
+		$sql->bind_param('i',$codCurso);
 		$sql->execute();
-		return $sql;
+		$resultado=$sql->get_result();
+		if($resultado->num_rows > 0)
+		{
+			$curso=$resultado->fetch_assoc();	
+		}else{
+			$curso='1';
+		}
+		$sql->close();
+		$con->close();
+ 		return $curso;
  	}
 
 	public function guardarCurso($datos)
 	{
-		$existe=self::ConsultarCurso($datos['codEscuela'],$datos['nombre']);
-		if($existe->rowCount()==0)
+		$existe=self::ConsultarCursoModel($datos);
+		if($existe->num_rows==0)
 		{
-			$sql=mainModel::conectar()->prepare("INSERT INTO curso (CodEscuela, Ciclo, tipo, nombre, creditos) VALUES (:codEscuela,:Ciclo,:Tipo,:Nombre,:Creditos) ");
-			$sql->bindParam(':codEscuela',$datos['codEscuela']);
-			$sql->bindParam(':Ciclo',$datos['ciclo']);
-			$sql->bindParam(':Tipo',$datos['tipo']);
-			$sql->bindParam(':Nombre',$datos['nombre']);
-			$sql->bindParam(':Creditos',$datos['creditos']);
+			$con=mainModel::conectar();
+			$sql=$con->prepare("INSERT INTO curso (CodEscuela, Ciclo, tipo, nombre, creditos) VALUES (?,?,?,?,?) ");
+			$sql->bind_param('iissi',$datos['codEscuela'],$datos['ciclo'],$datos['tipo'],$datos['nombre'],$datos['creditos']);
 			$sql->execute();
-			return $sql;	
-		}else{
-			return 0;
-		}
-		
+			$resultado=$sql->affected_rows;
+			$sql->close();
+			$con->close();
+	 		return $resultado;
+ 		}else{
+ 			return "existe";
+ 		}
  	}
 	public function actualizarCurso($datos){
-		$existe=self::ConsultarCurso($datos['codEscuela'],$datos['nombre']);
-		$curso=$existe->fetch();
-		if($existe->rowCount()==0 || $curso['CodCurso']==$datos['codCurso'])
+		$existe=self::ConsultarCurso($datos['codCurso']);
+		if($existe=='1' || $existe['CodCurso']==$datos['codCurso'])
 		{
- 			$sql=mainModel::conectar()->prepare("UPDATE curso SET CodEscuela=:codEscuela, Ciclo=:Ciclo, tipo=:Tipo, nombre=:Nombre, creditos=:Creditos WHERE CodCurso=:CodCurso ");
- 			$sql->bindParam(':codEscuela',$datos['codEscuela']);
- 			$sql->bindParam(':Ciclo',$datos['ciclo']);
-			$sql->bindParam(':Tipo',$datos['tipo']);
-			$sql->bindParam(':Nombre',$datos['nombre']);
-			$sql->bindParam(':Creditos',$datos['creditos']);
-			$sql->bindParam(':CodCurso',$datos['codCurso']);
+			$con=mainModel::conectar();
+ 			$sql=$con->prepare("UPDATE curso SET CodEscuela=?, Ciclo=?, tipo=?, nombre=?, creditos=? WHERE CodCurso=? ");
+ 			$sql->bind_param('iissii',$datos['codEscuela'],$datos['ciclo'],$datos['tipo'],$datos['nombre'],$datos['creditos'],$datos['codCurso']);
 			$sql->execute();
-			return $sql;
+			$resultado=$sql->affected_rows;
+			$sql->close();
+			$con->close();
+	 		return $resultado;
 		}else{
-			return 0;
+			return 'existe';
 		}
  	}
 
  	public function eliminarCurso($codCurso)
 	{
-		$sql=mainModel::conectar()->prepare("DELETE FROM curso WHERE CodCurso=:Codigo ");
-		$sql->bindParam(':Codigo',$codCurso);
+		$con=mainModel::conectar();
+		$sql=$con->prepare("DELETE FROM curso WHERE CodCurso=? ");
+		$sql->bind_param('i',$codCurso);
 		$sql->execute();
-		return $sql;
+		$resultado=$sql->affected_rows;
+		$sql->close();
+		$con->close();
+ 		return $resultado;
 	}
 }

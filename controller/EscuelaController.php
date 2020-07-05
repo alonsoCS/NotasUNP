@@ -26,7 +26,7 @@ class EscuelaController extends MainController{
         $creO=mainModel::limpiar_cadena($_POST['creO']);
         $creE=mainModel::limpiar_cadena($_POST['creE']);
         $ciclos=mainModel::limpiar_cadena($_POST['ciclos']);
-        $datos=[
+        $datos=[ 
             "codFacultad"=>$facultad,
             "nombre"=>$nombre,
             "codigo"=>$codigo,
@@ -36,15 +36,14 @@ class EscuelaController extends MainController{
         ];
         $resultado=$this->escuela->guardarEscuela($datos);
         
-        if($resultado == "0")
+        if($resultado == "existe")
         {
-            $mensaje="Escuela ya ha sido agregada";
-        }elseif ($resultado->rowCount()==0) {
-            $mensaje="Error al guardar";
+            $_POST['mensaje']="Escuela ya ha sido agregada";
+        }elseif ($resultado>0) {
+            $_POST['mensaje']="Guadado con éxito";  
         }else{
-            $mensaje="Guadado con éxito";  
+            $_POST['mensaje']="Error al guardar";
         }
-        $_POST['mensaje']=$mensaje;
         $this->Index();
     }
 
@@ -52,10 +51,8 @@ class EscuelaController extends MainController{
     {
         $id=mainModel::limpiar_cadena($id);
         $data=$this->escuela->consultarEscuela($id);
-        $data=$data->fetch();
-
+        
         $facultad=FacultadModelo::consultarFacultad($data['CodFacultad']);
-        $facultad=$facultad->fetch();
         $_POST['facultades']=FacultadModelo::ConsultarFacultadesAjax($facultad['CodUniversidad']);
         $_POST['universidades']=UniversidadModelo::ConsultarUniversidades();
         $_POST['universidad']=$facultad['CodUniversidad'];
@@ -82,15 +79,14 @@ class EscuelaController extends MainController{
         ];
         $resultado=$this->escuela->actualizarEscuela($datos);
         
-        if($resultado == "0")
+        if($resultado == "existe")
         {
-            $mensaje="Escuela ya ha sido agregada";
-        }elseif ($resultado->rowCount()==0) {
-            $mensaje="Error al guardar";
+            $_POST['mensaje']="Escuela ya ha sido agregada";
+        }elseif ($resultado>0) {
+            $_POST['mensaje']="Se actualizó con éxito";  
         }else{
-            $mensaje="Guadado con éxito";  
+            $_POST['mensaje']="Error al actualizar";
         }
-        $_POST['mensaje']=$mensaje;
         $this->Index();
     }
 
@@ -99,7 +95,7 @@ class EscuelaController extends MainController{
             $id=mainModel::limpiar_cadena($id);
 
             $data=$this->escuela->eliminarEscuela($id);
-            if($data->rowCount()>0){
+            if($data>0){
                 $_POST['mensaje']="Se eliminó correctamente";
             }else{
                 $_POST['mensaje']="Hubo un error en Eliminar";

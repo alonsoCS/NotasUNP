@@ -1,23 +1,22 @@
 <?php  
-	
 	class mainModel
 	{
 		//conexion a la base de datos
 		protected function conectar()
 		{
-			$SERVER="localhost";
-			$DB="notasunp";
-			$USER="root";
-			$PASS="alonso2014";
-			$SGBD="mysql:host=".$SERVER.";dbname=".$DB;
-			$enlace= new PDO($SGBD,$USER,$PASS);
-			return $enlace;
+			$conexion=new mysqli('localhost','root','alonso2014','notasunp');
+			if($conexion->connect_errno)
+			{
+				echo $conexion->connect_error;
+				return '0';
+			}else{
+				return $conexion;
+			}
 		}
 		//ejecuta una consulta simple
 		protected function ejecutar_consulta_simple($consulta)
 		{
-			$respuesta=self::conectar()->prepare($consulta);//prepara para la consulta
-			$respuesta->execute();
+			$respuesta=self::conectar()->query($consulta);//prepara para la consulta
 			return $respuesta;
 		}
 

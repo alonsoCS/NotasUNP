@@ -8,11 +8,11 @@
 
  		$facultades=new FacultadModelo();
  		$facultades=$facultades->ConsultarFacultadesAjax($_POST['codUniversidad']);
- 		$data="";
+ 		$data=array();
  		foreach ($facultades as $facultad) {
- 			$data=$data."/".$facultad['Nombre']."-".$facultad['CodFacultad']; 
+ 			$data[]=$facultad;
  		}
- 		echo $data;
+ 		echo json_encode($data);
  	}
  	else
  	{

@@ -23,8 +23,7 @@ class InformeController extends MainController{
         $creditos=array();
         
         $escuelas=new EscuelaModelo();
-        $dataEscuela=$escuelas->ConsultarEscuela($codEscuela);
-        $escuela=$dataEscuela->fetch();
+        $escuela=$escuelas->ConsultarEscuela($codEscuela);
 
         //creditos de carrera[e,o]****
         $creEscuelaObli=$escuela['CresObli'];
@@ -111,16 +110,13 @@ class InformeController extends MainController{
     {
         //universidad, escuela, facultad
         $escuelas=new EscuelaModelo();
-        $dataEscuela=$escuelas->ConsultarEscuela($codEscuela);
-        $escuela=$dataEscuela->fetch();
+        $escuela=$escuelas->ConsultarEscuela($codEscuela);
 
         $facultades=new FacultadModelo();
-        $dataFacultad=$facultades->consultarFacultad($escuela['CodFacultad']);
-        $facultad=$dataFacultad->fetch();
+        $facultad=$facultades->consultarFacultad($escuela['CodFacultad']);
 
         $universidades=new UniversidadModelo();
-        $dataUniversidad=$universidades->consultarUniversidad($facultad['CodUniversidad']);
-        $universidad=$dataUniversidad->fetch();
+        $universidad=$universidades->consultarUniversidad($facultad['CodUniversidad']);
 
         $informacion=[
             "Universidad"=>$universidad['Nombre'],
@@ -136,23 +132,7 @@ class InformeController extends MainController{
         $rowCurso=array();
         $cursos=new CursoModelo();
         $dataCursos=$cursos->ConsultarCursosCicloGeneral($codEscuela);
-        foreach ($dataCursos as $rowCurso) {
-            $notas= new NotaCursoModelo();
-            $datos=[
-                "codCurso"=>$rowCurso["CodCurso"],
-                "codEstudiante"=>$codEstudiante
-            ];
-            $dataNota=$notas->ConsultarNotaCurso($datos);
-            if($dataNota->rowCount()>0)
-            {
-                $nota=$dataNota->fetch();
-                $rowCurso["Nota"]=$nota['Nota'];
-            }
-                
-            $resultSet[]=$rowCurso;
-        }
-        return $resultSet;
-
+        return $dataCursos;
     } 
 }
     

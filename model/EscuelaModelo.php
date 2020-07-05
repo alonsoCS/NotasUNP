@@ -6,74 +6,91 @@ class EscuelaModelo extends mainModel
 	public function ConsultarEscuelas()
 	{
 		$sql=mainModel::ejecutar_consulta_simple("SELECT * FROM escuela ");
- 		return $sql->fetchAll();
+ 		return $sql;
 	} 
-	public function consultarEscuela($codescuela)
+	public function consultarEscuela($codescuela) 
 	{
-		$sql=mainModel::conectar()->prepare("SELECT * FROM escuela WHERE CodEscuela=:Codigo LIMIT 1");
-		$sql->bindParam(':Codigo',$codescuela);
+		$con=mainModel::conectar();
+		$sql=$con->prepare("SELECT * FROM escuela WHERE CodEscuela=? LIMIT 1");
+		$sql->bind_param('i',$codescuela);
 		$sql->execute();
-		return $sql;
+		$resultado=$sql->get_result();
+		if($resultado->num_rows > 0)
+		{
+			$escuela=$resultado->fetch_assoc();	
+		}else{
+			$escuela='1';
+		}
+		$sql->close();
+		$con->close();
+ 		return $escuela;
 	}
 	public function consultarEscuelasAjax($codFacultad)
 	{
-		$sql=mainModel::conectar()->prepare("SELECT * FROM escuela WHERE CodFacultad=:Codigo");
-		$sql->bindParam(':Codigo',$codFacultad);
+		$con=mainModel::conectar();
+		$sql=$con->prepare("SELECT * FROM escuela WHERE CodFacultad=?");
+		$sql->bind_param('i',$codFacultad);
 		$sql->execute();
-		return $sql;
+		$resultado=$sql->get_result();
+		$sql->close();
+		$con->close();
+ 		return $resultado;
 	}
 	public function ConsultarEscuelaModel($datos)
  	{
- 		$sql=mainModel::ejecutar_consulta_simple("SELECT CodEscuela FROM escuela WHERE CodFacultad=:codFacultad AND Nombre=:nombre LIMIT 1");
-		$sql->bindParam(':codFacultad',$datos['codFacultad']);
- 		$sql->bindParam(':nombre',$datos['nombre']);
+ 		$con=mainModel::conectar();
+ 		$sql=$con->prepare("SELECT CodEscuela FROM escuela WHERE CodFacultad=? AND Nombre=? LIMIT 1");
+		$sql->bind_param('is',$datos['codFacultad'],$datos['nombre']);
 		$sql->execute();
-		return $sql;
+		$resultado=$sql->get_result();
+		$sql->close();
+		$con->close();
+ 		return $resultado;
  	}
 		
 	public function guardarEscuela($datos) {
 		$existe=self::ConsultarEscuelaModel($datos);
-		if($existe->rowCount()==0)
+		if($existe->num_rows==0)
 		{
- 			$sql=mainModel::conectar()->prepare("INSERT INTO escuela (CodFacultad, Codigo,Nombre,CresObli,CresElec,Ciclos) VALUES (:codFacultad,:codigo,:nombre,:creObli,:creElec,:ciclos )");
- 			$sql->bindParam(':codFacultad',$datos['codFacultad']);
- 			$sql->bindParam(':codigo',$datos['codigo']);
- 			$sql->bindParam(':nombre',$datos['nombre']);
- 			$sql->bindParam(':creObli',$datos['creObli']);
- 			$sql->bindParam(':creElec',$datos['creElec']);
- 			$sql->bindParam(':ciclos',$datos['ciclos']);
+			$con=mainModel::conectar();
+ 			$sql=$con->prepare("INSERT INTO escuela (CodFacultad, Codigo, Nombre, CresObli, CresElec, Ciclos) VALUES (?,?,?,?,?,?)");
+ 			$sql->bind_param('iisiii',$datos['codFacultad'],$datos['codigo'],$datos['nombre'],$datos['creObli'],$datos['creElec'],$datos['ciclos']);
 			$sql->execute(); 
-			return $sql;
+			$resultado=$sql->affected_rows;
+			$sql->close();
+			$con->close();
+	 		return $resultado;
  		}else{
- 			return "0";
+ 			return "existe";
  		}
  	}
  	public function actualizarEscuela($datos) {
-		$existe=self::ConsultarEscuelaModel($datos);
-		$escuela=$existe->fetch();
-		if($existe->rowCount()==0 || $escuela['CodEscuela']==$datos['codEscuela'])
+		$existe=self::ConsultarEscuela($datos['codEscuela']);
+		if($existe=='1' || $existe['CodEscuela']==$datos['codEscuela'])
 		{
- 			$sql=mainModel::conectar()->prepare("UPDATE escuela SET CodFacultad=:codFacultad, Codigo=:codigo, Nombre=:nombre,CresObli=:creObli,CresElec=:creElec, Ciclos=:ciclos WHERE CodEscuela=:codEscuela");
- 			$sql->bindParam(':codEscuela',$datos['codEscuela']);
- 			$sql->bindParam(':codFacultad',$datos['codFacultad']);
- 			$sql->bindParam(':codigo',$datos['codigo']);
- 			$sql->bindParam(':nombre',$datos['nombre']);
- 			$sql->bindParam(':creObli',$datos['creObli']);
- 			$sql->bindParam(':creElec',$datos['creElec']);
- 			$sql->bindParam(':ciclos',$datos['ciclos']);
+			$con=mainModel::conectar();
+ 			$sql=$con->prepare("UPDATE escuela SET CodFacultad=?, Codigo=?, Nombre=?,CresObli=?,CresElec=?, Ciclos=? WHERE CodEscuela=?");
+ 			$sql->bind_param('issiiii',$datos['codFacultad'],$datos['codigo'],$datos['nombre'],$datos['creObli'],$datos['creElec'],$datos['ciclos'],$datos['codEscuela']);
 			$sql->execute();
-			return $sql;
- 		}else{
- 			return "0";
- 		}
+			$resultado=$sql->affected_rows;
+			$sql->close();
+			$con->close();
+	 		return $resultado;
+		}else{
+			return 'existe';
+		}
  	}
 
  	public function eliminarEscuela($codescuela)
 	{
-		$sql=mainModel::conectar()->prepare("DELETE FROM escuela WHERE CodEscuela=:Codigo ");
-		$sql->bindParam(':Codigo',$codescuela);
+		$con=mainModel::conectar();
+		$sql=$con->prepare("DELETE FROM escuela WHERE CodEscuela=? ");
+		$sql->bind_param('i',$codescuela);
 		$sql->execute();
-		return $sql;
+		$resultado=$sql->affected_rows;
+		$sql->close();
+		$con->close();
+ 		return $resultado;
 	}
  	
 }

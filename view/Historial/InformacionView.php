@@ -13,12 +13,11 @@ if(isset($datos))
 			$creditos=0;
 			$Snota=0;
 	?>
-			<div class="table-responsive">
-				<table border="1" class="table table-striped table-bordered">
+			<div class="tabla-responsiva">
+				<table border="1" class="tabla">
 					<caption><strong>Ciclo : <?php echo $dato; ?></strong></caption>
 					<thead >
 						<tr class="bg-primary">
-							<th scope="col">Codigo</td>
 							<th scope="col">Tipo</td>
 							<th scope="col">Nombre</td>
 							<th scope="col">Creditos</td>
@@ -34,8 +33,6 @@ if(isset($datos))
 								$Snota+=($curso['nota']*$curso['creditos']);
 						?>
 								<tr align="center">
-									<td><?php echo $curso['CodCurso']; ?></td>
-
 									<td><?php echo $curso['tipo']; ?></td>
 									<td align="left"><?php echo $curso['nombre']; ?></td>
 									<td><?php echo $curso['creditos']; ?></td>
@@ -48,9 +45,7 @@ if(isset($datos))
 					</tbody>
 					<tfoot>
         				<tr class="bg-primary">
-          					<td ><strong>Creditos:</strong></td>
-          					<td><?php echo $creditos;?></td>
-          					<td></td>
+          					<td colspan="2"><strong>Creditos: <?=$creditos;?></strong></td>
           					<td><strong>Promedio:</strong></td>
           					<td><?php echo round(($Snota/$creditos) * 100) / 100; ?></td>
         				</tr>

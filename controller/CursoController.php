@@ -1,6 +1,6 @@
 <?php
 class CursoController extends MainController{
- 
+  
     protected $curso;
     public function __construct()
     {
@@ -33,16 +33,16 @@ class CursoController extends MainController{
             "creditos"=>$creditos
         ];
         $resultado=$this->curso->guardarCurso($data);
-        if($resultado=="0")
+        if($resultado=="existe")
         {
              $_POST['mensaje']="El curso ya existe";
-        }else if($resultado->rowCount()>0)
+        }else if($resultado>0)
         {
-             $_POST['mensaje']="Guardado con éxito";
+            $_POST['mensaje']="Guardado con éxito";
         }
         else
         {
-             $_POST['mensaje']="Hubo un error" ;
+            $_POST['mensaje']="Hubo un error";
         }
          $this->Index();
     }
@@ -50,14 +50,11 @@ class CursoController extends MainController{
     public function Modificar($codCurso)
     {
         $codCurso=mainModel::limpiar_cadena($codCurso);
-        $dataCurso=$this->curso->ConsultarCursoModel($codCurso);
-        $dataCurso=$dataCurso->fetch();
+        $dataCurso=$this->curso->ConsultarCurso($codCurso);
         
         $escuela=EscuelaModelo::consultarEscuela($dataCurso['CodEscuela']);
-        $escuela=$escuela->fetch();
         
         $facultad=FacultadModelo::consultarFacultad($escuela['CodFacultad']);
-        $facultad=$facultad->fetch();
 
         $_POST['facultad']=$escuela['CodFacultad'];
         $_POST['universidad']=$facultad['CodUniversidad'];
@@ -73,7 +70,7 @@ class CursoController extends MainController{
         $codCurso=mainModel::limpiar_cadena($_POST['codCurso']);
         $escuela=mainModel::limpiar_cadena($_POST['escuelas']);
         $nombre=mainModel::limpiar_cadena($_POST['nombre']);
-        $ciclos=mainModel::limpiar_cadena($_POST['ciclos']);
+        $ciclo=mainModel::limpiar_cadena($_POST['ciclos']);
         $tipo=mainModel::limpiar_cadena($_POST['tipo']);
         $creditos=mainModel::limpiar_cadena($_POST['creditos']);
         $datos=[
@@ -85,32 +82,29 @@ class CursoController extends MainController{
             "creditos"=>$creditos
         ];
         $resultado=$this->curso->actualizarCurso($datos);
-        if($resultado=="0")
+        if($resultado=="existe")
         {
-            $mensaje="El curso ya existe";
-        }elseif ($resultado->rowCount()==0) {
-            $mensaje="Error al guardar";
+            $_POST['mensaje']="El curso ya existe";
+        }elseif ($resultado>0) {
+            $_POST['mensaje']="Actualizado con éxito";  
         }else{
-            $mensaje="Actualizado con éxito";  
+            $_POST['mensaje']="Error al guardar";
         }
-        $_POST['mensaje']=$mensaje;
         $this->Index();
     }
 
     public function Eliminar($id)
     {
-            $id=mainModel::limpiar_cadena($id);
+        $id=mainModel::limpiar_cadena($id);
 
-            $data=$this->curso->eliminarCurso($id);
-            if($data->rowCount()>0){
-                $_POST['mensaje']="Se eliminó correctamente";
-            }else{
-                $_POST['mensaje']="Hubo un error en Eliminar";
-            }
-            $this->Index();
+        $data=$this->curso->eliminarCurso($id);
+        if($data>0){
+            $_POST['mensaje']="Se eliminó correctamente";
+        }else{
+            $_POST['mensaje']="Hubo un error en Eliminar";
         }
-
-  
+        $this->Index();
+    }
 }
     
 ?>

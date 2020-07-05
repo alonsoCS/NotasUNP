@@ -1,6 +1,5 @@
 <?php
 class EstudianteController extends MainController{
- 
     protected $estudiante;
     public function __construct()
     {
@@ -44,15 +43,14 @@ class EstudianteController extends MainController{
 
         $resultado=$this->estudiante->guardarEstudiante($datos);
         
-        if($resultado == "0")
+        if($resultado == "existe")
         {
-            $mensaje="Estudiante ya ha sido agregado";
-        }elseif ($resultado->rowCount()==0) {
-            $mensaje="Error al guardar";
+            $_POST['mensaje']="Estudiante ya ha sido agregado";
+        }elseif ($resultado>0) {
+            $_POST['mensaje']="Guadado con éxito";  
         }else{
-            $mensaje="Guadado con éxito";  
+            $_POST['mensaje']="Error al guardar"; 
         }
-        $_POST['mensaje']=$mensaje;
         $this->Index();
 
     }
@@ -60,13 +58,10 @@ class EstudianteController extends MainController{
     {
         $id=mainModel::limpiar_cadena($id);
         $dataEstudiante=$this->estudiante->BuscarEstudiante($id);
-        $dataEstudiante=$dataEstudiante->fetch();
 
         $escuela=EscuelaModelo::consultarEscuela($dataEstudiante['CodEscuela']);
-        $escuela=$escuela->fetch();
         
         $facultad=FacultadModelo::consultarFacultad($escuela['CodFacultad']);
-        $facultad=$facultad->fetch();
 
         $_POST['facultad']=$escuela['CodFacultad'];
         $_POST['universidad']=$facultad['CodUniversidad'];
@@ -102,12 +97,11 @@ class EstudianteController extends MainController{
 
         $resultado=$this->estudiante->actualizarEstudiante($datos);
         
-        if ($resultado->rowCount()==0) {
-            $mensaje="Hubo un error";
+        if ($resultado>0) {
+            $_POST['mensaje']="Se actualizó correctamente";  
         }else{
-            $mensaje="Se actualizó correctamente";  
+            $_POST['mensaje']="Hubo un error";
         }
-        $_POST['mensaje']=$mensaje;
         $this->Index();
     }
 
@@ -116,7 +110,7 @@ class EstudianteController extends MainController{
             $id=mainModel::limpiar_cadena($id);
 
             $data=$this->estudiante->eliminarEstudiante($id);
-            if($data->rowCount()>0){
+            if($data>0){
                 $_POST['mensaje']="Se eliminó correctamente";
             }else{
                 $_POST['mensaje']="Hubo un error en Eliminar";

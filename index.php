@@ -6,7 +6,7 @@ session_start(['name'=>'Notas']);
     require_once "config/router.php";
 
     require_once "config/MainController.php";
-    //hubo un cambo
+
     require_once "config/mainModel.php";
     
     
@@ -26,7 +26,7 @@ session_start(['name'=>'Notas']);
 			if(isset($ruta[1]))
 			{
 
-                if(isset($_GET['id']))
+                if(isset($_GET['id']) &&  $_GET['views']!=$_GET['id'])
                 {
                     cargarAccion($controlador,$ruta[1],$_GET['id']);
                 }else{

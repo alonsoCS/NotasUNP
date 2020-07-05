@@ -1,24 +1,17 @@
 
-<div align="center" class="Plogin" align="center" >
+<div align="center" class="login" align="center" >
 	
-	<form action="<?php echo URL;?>Login/Ingresar"  method="post"  class="form-signin" >
-		<h2 class="form-signin-heading">INICIAR SESION</h2>
-		<div class="row">
-  			<div class="col-lg-12">
-  				<div class="input-group">
-  					<span class="input-group-addon icon-user" ></span>
-					<input type="number" name="user" id="user" maxlength="10" class="form-control" value="<?php echo $user;?>" placeholder="codigo" autofocus required>
-				</div>
-			</div>
+	<form action="<?php echo URL;?>Login/Ingresar"  method="post"  >
+		<h2>INICIAR SESION</h2>
+		<br>
+		<div class="col-12">
+  			<span class="icon-user icono" ></span>
+			<input type="number" name="user" id="user" maxlength="10" class="campo" value="<?php if(isset($_POST['user'])){ echo $_POST['user'];} ?>" placeholder="codigo" autofocus required>
 		</div>
 		<br>
-		<div class="row">
-  			<div class="col-lg-12">
-  				<div class="input-group">
-  					<span class="input-group-addon icon-key-inv" ></span>
-					<input type="password" class="form-control" class="form-control" name="password" id="password" placeholder="contraseña" required >
-				</div>
-			</div>
+		<div class="col-12">
+  			<span class="icon-key-inv icono" ></span>
+			<input type="password" class="campo" name="password" id="password" placeholder="contraseña" required >		
 		</div>
 		<br>
 		<h4><a href="Login/Registrar">Crear una cuenta</a></h4>
@@ -29,6 +22,8 @@
 			</div>
 		<?php } ?>
 		<br>
-		<input type="submit" class="btn btn-lg btn-block btn-success"  value="Iniciar Sesion">
+		<input type="submit" class="button"  value="Iniciar Sesion">
 		</form>
+		<br>
+
 </div> 

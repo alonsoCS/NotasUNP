@@ -1,7 +1,7 @@
 <?php 
 $creditos=$_POST['creditos']; ?>
-<div class="table-responsive">
-        <table class="table table-striped table-bordered">
+<div class="tabla-responsiva">
+        <table class="tabla">
         		<colgroup>
             		<col style="width: 300px">
             		<col style="width: 200px">

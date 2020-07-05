@@ -23,20 +23,21 @@
             $ciudad=mainModel::limpiar_cadena($_POST['ciudad']);
             $rector=mainModel::limpiar_cadena($_POST['rector']);
            
-                $datos=[
-                    "nombre"=>$nombre,
-                    "ciudad"=>$ciudad,
-                    "rector"=>$rector
-                ];
-                $guardar=$this->universidad->crearUniversidad($datos);
-                
-                if($guardar=='0'){
-                    $_POST['mensaje']="Universidad ya existe";
-                }elseif ($guardar->rowCount()==0) {
-                    $_POST['mensaje']="Hubo un error en guardar";
-                }else{
-                    $_POST['mensaje']="Guardado con exito";
-                }
+            $datos=[
+                "nombre"=>$nombre,
+                "ciudad"=>$ciudad,
+                "rector"=>$rector
+            ];
+            $guardar=$this->universidad->crearUniversidad($datos);
+            
+            if($guardar=="existe")
+            {
+                $_POST['mensaje']="La universidad ya existe";
+            }elseif($guardar>0){
+                $_POST['mensaje']="La universidad se creó correctamente";
+            }else{
+                $_POST['mensaje']="Hubo un error en actualizar";
+            }
             $this->Index();
         }
 
@@ -44,7 +45,6 @@
         {
             $id=mainModel::limpiar_cadena($id);
             $data=$this->universidad->consultarUniversidad($id);
-            $data=$data->fetch();
             $this->view("Universidad","Modificar",$data);
         }
         public function Actualizar()
@@ -61,10 +61,10 @@
                 "rector"=>$rector
             ];
             $guardar=$this->universidad->actualizarUniversidad($datos);
-            if($guardar==0)
+            if($guardar=="existe")
             {
                 $_POST['mensaje']="La universidad ya existe";
-            }elseif($guardar->rowCount()>0){
+            }elseif($guardar>0){
                 $_POST['mensaje']="Se actualizó correctamente";
             }else{
                 $_POST['mensaje']="Hubo un error en actualizar";
@@ -77,7 +77,7 @@
             $id=mainModel::limpiar_cadena($id);
 
             $data=$this->universidad->eliminarUniversidad($id);
-            if($data->rowCount()>0){
+            if($data>0){
                 $_POST['mensaje']="Se eliminó correctamente";
             }else{
                 $_POST['mensaje']="Hubo un error en Eliminar";

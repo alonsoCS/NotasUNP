@@ -1,7 +1,7 @@
-<fieldset>
-	<legend>Todas las Escuelas</legend>
-	<div class="table-responsive">
-	<table id="tabla" class="table table-striped table-bordered" >
+
+<div class="tabla-responsiva">
+	<h3>Todas las Escuelas</h3>
+	<table id="tabla" class="tabla" >
 			
 	<thead>
 		<tr class="bg-primary">
@@ -43,4 +43,3 @@
 
 </table>
 </div>
-</fieldset>
